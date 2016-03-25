@@ -1,0 +1,12 @@
+# User-specific files
+*.suo
+*.user
+
+# Build results
+[Dd]ebug/
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.opensdf
+*.sdf

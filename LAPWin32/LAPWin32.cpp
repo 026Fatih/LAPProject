@@ -146,7 +146,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyClient,
 		cxOpenGLStatic,
 		cyOpenGLStatic,
-		cySpacing;
+		cySpacing,
+		xStartingPos,
+		yStartingPos;
 	LRESULT				lResult;
 	static OPENFILENAME	ofnFirstSTL, ofnSecondSTL;       // common dialog box structure
 	PAINTSTRUCT			ps;
@@ -219,6 +221,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		else
 			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hZoomOutImage);
 
+		/*OpenGLStaticDefProc = (WNDPROC)SetWindowLongPtr(
+			hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
 
 		// Store the device context
 		hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
@@ -233,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		wglMakeCurrent(hdcOpenGLStatic, hRC);
 		SetupRC();
 
-		break;
+		return 0;
 
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
@@ -251,6 +255,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			temp = new STLFile();
 			temp->read(&hWnd, &maxCoordinate);
 			STLFileVector.push_back(temp);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->yRot = 0;
+				(*p)->xRot = 0;
+			}
 			ChangeSize(cxClient, cyClient);
 			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			break;
@@ -278,7 +287,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
-		break;
+		return 0;
+
 	case WM_PAINT:
 		hdcMain = BeginPaint(hWnd, &ps);		
 
@@ -291,7 +301,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ValidateRect(hwndOpenGLStatic, NULL);
 
 		EndPaint(hWnd, &ps);
-		break;
+		return 0;
+
+	case WM_LBUTTONDOWN:
+		xStartingPos = LOWORD(lParam); 
+		yStartingPos = HIWORD(lParam);
+		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+		{
+			(*p)->yBaseRot = (int)(*p)->yRot % 360;
+			(*p)->xBaseRot = (int)(*p)->xRot % 360;
+		}
+		return 0 ;
+
+	case WM_MOUSEMOVE:
+		if (wParam & MK_LBUTTON)
+		{
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->yRot = (*p)->yBaseRot + xStartingPos - LOWORD(lParam);
+				(*p)->xRot = (*p)->xBaseRot + yStartingPos - HIWORD(lParam);
+			}
+		}
+
+		InvalidateRect(hWnd, NULL, FALSE);
+		return 0 ;
 
 		// Windows is telling the application that it may modify
 		// the system palette.  This message in essance asks the 
@@ -315,7 +348,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			return nRet;
 		}
-		break;
+		return 0;
 
 		// This window may set the palette, even though it is not the 
 		// currently active window.
@@ -334,7 +367,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			UpdateColors(hdcOpenGLStatic);
 			return 0;
 		}
-		break;
+		return 0;
 
 		// Window is resized.
 	case WM_SIZE:
@@ -348,7 +381,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
 		MoveWindow(hwndOpenGLStatic, LEFTTOOLBARWIDTH, 0, cxOpenGLStatic, cyOpenGLStatic, FALSE);
 		MoveWindow(hwndZoomInButton, cxChar, 0, cxButton, cyButton, TRUE);
-		break;
+		return 0;
 
 	case WM_KEYDOWN:
 		{
@@ -386,7 +419,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
-		break;
+		return 0;
 
 	case WM_DESTROY:
 		// Deselect the current rendering context and delete it
@@ -396,12 +429,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(hPalette != NULL)
 			DeleteObject(hPalette);
 		PostQuitMessage(0);
-		break;
+		return 0;
 
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	return 0;
 }
 
 // Message handler for about box.
@@ -606,4 +638,25 @@ void ChangeSize(GLsizei w, GLsizei h)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+
+LRESULT CALLBACK OpenGLStaticProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	static std::vector<STLFile*>::iterator p;
+	switch (message)
+	{
+	case WM_MOUSEMOVE:
+		if (wParam & MK_LBUTTON)
+		{
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->incrementXRot(-5.0f);
+			}
+		}
+
+		InvalidateRect(GetParent(hwnd), NULL, FALSE);
+		return 0 ;
+	}
+	return CallWindowProc(OpenGLStaticDefProc, hwnd, message, wParam, lParam);
 }

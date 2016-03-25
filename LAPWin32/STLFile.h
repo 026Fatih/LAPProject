@@ -9,7 +9,6 @@ class STLFile
 {
 private:
 	BOOL bLockRotation;
-	GLfloat xRot, yRot;
 
 	int		GetTriangleCountFromSTLFile();
 	Point	GetBiggestXVertex();
@@ -29,7 +28,10 @@ public:
 	COLORREF		acrCustClr[16], rgbSurface, rgbBorder; // array of custom colors 
 	GLfloat
 		rBorder, gBorder, bBorder,
-		rSurface, gSurface, bSurface;
+		rSurface, gSurface, bSurface,
+		xBaseRot,	// Used when rotating with mouse
+		yBaseRot,	// Used when rotating with mouse
+		xRot, yRot;
 	int				cTriangles;
 	OPENFILENAME	ofn;
 	TCHAR			szSTLPath[MAX_PATH];

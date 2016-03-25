@@ -34,6 +34,8 @@ HPALETTE hPalette = NULL;
 
 std::vector<STLFile*> STLFileVector;
 
+WNDPROC OpenGLStaticDefProc;
+
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -45,3 +47,4 @@ void				SetDCPixelFormat(HDC hdc);
 HPALETTE			GetOpenGLPalette(HDC hDC);
 void				ChangeSize(GLsizei w, GLsizei h);
 void				ErrorExit(LPTSTR lpszFunction);
+LRESULT CALLBACK	OpenGLStaticProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);

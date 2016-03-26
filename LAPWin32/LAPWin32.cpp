@@ -66,7 +66,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
+	wcex.style			= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 	wcex.lpfnWndProc	= WndProc;
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
@@ -222,7 +222,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hZoomOutImage);
 
 		/*OpenGLStaticDefProc = (WNDPROC)SetWindowLongPtr(
-			hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
+		hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
 
 		// Store the device context
 		hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
@@ -254,14 +254,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_FILE_ADDSTLFILE:
 			temp = new STLFile();
 			temp->read(&hWnd, &maxCoordinate);
-			STLFileVector.push_back(temp);
-			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			if (temp->bOpened)
 			{
-				(*p)->yRot = 0;
-				(*p)->xRot = 0;
+				STLFileVector.push_back(temp);
+				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+				{
+					(*p)->yRot = 0;
+					(*p)->xRot = 0;
+				}
+				ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
+				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			}
-			ChangeSize(cxClient, cyClient);
-			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			else
+				delete temp;
 			break;
 
 		case IDM_VIEW_ZOOMIN:
@@ -325,6 +330,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		InvalidateRect(hWnd, NULL, FALSE);
 		return 0 ;
+
+	case WM_LBUTTONDBLCLK:
+		xStartingPos = LOWORD(lParam); 
+		yStartingPos = HIWORD(lParam);
+		if (xStartingPos > LEFTTOOLBARWIDTH)
+		{
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				int xhalf = (cxClient - LEFTTOOLBARWIDTH) / 2,
+					yhalf = cyClient / 2,
+					xtocheck, ytocheck;
+
+				xtocheck = (xStartingPos - xhalf) / xRatio;
+
+				ytocheck = (yhalf - yStartingPos) / yRatio;
+
+				if ((*p)->Inside(xtocheck, ytocheck))
+				{
+					(*p)->bShow = !(*p)->bShow;
+					break;
+				}
+			}
+		}
+
+		return 0;
 
 		// Windows is telling the application that it may modify
 		// the system palette.  This message in essance asks the 
@@ -624,17 +654,25 @@ void ChangeSize(GLsizei w, GLsizei h)
 
 	// Establish clipping volume (left, right, bottom, top, near, far)
 	if (w <= h) 
+	{
 		glOrtho(-maxCoordinate,
-		maxCoordinate,
-		(-maxCoordinate) * (GLfloat)h / w,
-		maxCoordinate * (GLfloat)h / w,
-		maxCoordinate, -maxCoordinate);
+			maxCoordinate,
+			(-maxCoordinate) * (GLfloat)h / w,
+			maxCoordinate * (GLfloat)h / w,
+			maxCoordinate, -maxCoordinate);
+		xRatio = w / (2 * maxCoordinate);
+		yRatio = h / (2 * maxCoordinate * ((GLfloat)h / w));
+	}
 	else 
+	{
 		glOrtho(-maxCoordinate * (GLfloat)w / h,
-		maxCoordinate * (GLfloat)w / h,
-		-maxCoordinate,
-		maxCoordinate,
-		maxCoordinate, -maxCoordinate);
+			maxCoordinate * (GLfloat)w / h,
+			-maxCoordinate,
+			maxCoordinate,
+			maxCoordinate, -maxCoordinate);
+		xRatio = w / (2 * maxCoordinate * ((GLfloat)w / h));
+		yRatio = h / (2 * maxCoordinate);
+	}
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

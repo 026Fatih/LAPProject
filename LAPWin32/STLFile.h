@@ -13,6 +13,8 @@ private:
 	int		GetTriangleCountFromSTLFile();
 	Point	GetBiggestXVertex();
 	Point	GetSmallestXVertex();
+	Point	GetBiggestYVertex();
+	Point	GetSmallestYVertex();
 	void	AlterPositionX(GLfloat amount);
 	void	AlterPositionY(GLfloat amount);
 	void	AlterPositionZ(GLfloat amount);
@@ -46,6 +48,13 @@ public:
 		GLfloat rSurface, GLfloat  gSurface, GLfloat  bSurface);
 	void	incrementXRot(GLfloat amount);
 	void	incrementYRot(GLfloat amount);
+
+	/*
+	Checks whether that point with given x and y values is
+	inside of the rectangular area that surrounds the object.
+	Parameters must be relative to coordinate axis of OpenGL.
+	*/
+	BOOL	Inside(int x, int y);
 	BOOL	Locked();
 	void	LockRotation(BOOL bLock);
 	void	Merge(STLFile *s, int iMergePos);

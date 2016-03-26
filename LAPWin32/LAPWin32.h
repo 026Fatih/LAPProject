@@ -21,8 +21,10 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 // Rotation amounts
-static GLfloat xRot = 0.0f;
-static GLfloat yRot = 0.0f;
+GLfloat xRot = 0.0f;
+GLfloat yRot = 0.0f;
+
+GLfloat xRatio, yRatio;
 
 STLFile
 FirstSTLFile,

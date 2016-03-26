@@ -161,6 +161,46 @@ Point STLFile::GetSmallestXVertex()
 	return resultPoint;
 }
 
+Point STLFile::GetBiggestYVertex()
+{
+	int		i;
+	Point	resultPoint(0, -FLT_MAX, 0);
+	
+	for (i = 0; i < this->cTriangles; i++)
+	{
+		if (this->triangles[i].p1.y > resultPoint.y)
+			resultPoint = this->triangles[i].p1;
+		if (this->triangles[i].p2.y > resultPoint.y)
+			resultPoint = this->triangles[i].p2;
+		if (this->triangles[i].p3.y > resultPoint.y)
+			resultPoint = this->triangles[i].p3;
+	}
+	return resultPoint;
+}
+
+Point STLFile::GetSmallestYVertex()
+{
+	int		i;
+	Point	resultPoint(0, FLT_MAX, 0);
+	
+	for (i = 0; i < this->cTriangles; i++)
+	{
+		if (this->triangles[i].p1.y < resultPoint.y)
+			resultPoint = this->triangles[i].p1;
+		if (this->triangles[i].p2.y < resultPoint.y)
+			resultPoint = this->triangles[i].p2;
+		if (this->triangles[i].p3.y < resultPoint.y)
+			resultPoint = this->triangles[i].p3;
+	}
+	return resultPoint;
+}
+
+BOOL STLFile::Inside(int x, int y)
+{
+	return ((x < this->GetBiggestXVertex().x) && (x > this->GetSmallestXVertex().x) &&
+		(y < this->GetBiggestYVertex().y) && (y > this->GetSmallestYVertex().y));
+}
+
 void STLFile::AlterPositionX(GLfloat amount)
 {
 	int i;

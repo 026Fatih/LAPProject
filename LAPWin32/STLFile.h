@@ -9,6 +9,7 @@ class STLFile
 {
 private:
 	BOOL bLockRotation;
+	char *szSolidName;
 
 	int		GetTriangleCountFromSTLFile();
 	Point	GetBiggestXVertex();
@@ -36,7 +37,8 @@ public:
 		xRot, yRot;
 	int				cTriangles;
 	OPENFILENAME	ofn;
-	TCHAR			szSTLPath[MAX_PATH];
+	TCHAR
+		szSTLPath[MAX_PATH];		
 	Triangle		*triangles;
 
 	STLFile(void);
@@ -54,14 +56,16 @@ public:
 	inside of the rectangular area that surrounds the object.
 	Parameters must be relative to coordinate axis of OpenGL.
 	*/
-	BOOL	Inside(int x, int y);
-	BOOL	Locked();
-	void	LockRotation(BOOL bLock);
-	void	Merge(STLFile *s, int iMergePos);
-	void	promptSurfaceColor(HWND hwndOwner);
-	void	promptBorderColor(HWND hwndOwner);
-	void	read(HWND *hwndOwner, GLfloat *maxCoordinate);
-	void	ResetRotation();
-	void	setSurfaceColor(COLORREF rgbSurface);
-	void	setBorderColor(COLORREF rgbBorder);
+	BOOL		Inside(int x, int y);
+	BOOL		Locked();
+	void		LockRotation(BOOL bLock);
+	void		Merge(STLFile *s, int iMergePos);
+	void		promptSurfaceColor(HWND hwndOwner);
+	void		promptBorderColor(HWND hwndOwner);
+	void		read(HWND *hwndOwner, GLfloat *maxCoordinate);
+	void		ResetRotation();
+	void		setSurfaceColor(COLORREF rgbSurface);
+	void		setBorderColor(COLORREF rgbBorder);
+	const char*	getName();
+	void		setName(char szName[]);
 };

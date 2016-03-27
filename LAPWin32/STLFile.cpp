@@ -21,6 +21,8 @@ STLFile::STLFile(const TCHAR szSTLFilePath[], int *maxX, int *maxY, int *maxZ)
 STLFile::~STLFile(void)
 {
 	delete[] this->triangles;
+	if (this->bOpened)
+		delete this->szSolidName;
 }
 
 void STLFile::draw(void)
@@ -269,6 +271,10 @@ void STLFile::read(HWND *hwndOwner, GLfloat *maxCoordinate)
 	this->cTriangles = 0;
 	fileSTL.open(this->ofn.lpstrFile);
 	fileSTL.getline(szLine, MAXLINE);
+	pTemp = strstr(szLine, "solid");
+	if (pTemp != NULL)
+		this->setName(pTemp + 6);
+
 	while(!fileSTL.eof())
 	{
 		pTemp = strstr(szLine, "vertex");
@@ -378,4 +384,15 @@ void STLFile::promptBorderColor(HWND hwndOwner)
 	{
 		this->setBorderColor(cc.rgbResult);
 	}
+}
+
+void STLFile::setName(char szName[])
+{
+	this->szSolidName = new char[strlen(szName) + 1];
+	strcpy_s(this->szSolidName, strlen(szName) + 1, szName);
+}
+
+const char* STLFile::getName()
+{
+	return this->szSolidName;
 }

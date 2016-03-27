@@ -23,5 +23,7 @@
 #include <fstream>
 #include <strsafe.h>
 #include <vector>
+#include <commctrl.h>
+#include <Gdiplus.h>
 
 // TODO: reference additional headers your program requires here

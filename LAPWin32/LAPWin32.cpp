@@ -11,6 +11,27 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+	
+	INITCOMMONCONTROLSEX iccex;
+	iccex.dwICC = sizeof(iccex);
+		iccex.dwICC = ICC_ANIMATE_CLASS |
+			ICC_BAR_CLASSES|
+			ICC_COOL_CLASSES |
+			ICC_DATE_CLASSES |
+			ICC_HOTKEY_CLASS |
+			ICC_INTERNET_CLASSES |
+			ICC_LINK_CLASS |
+			ICC_LISTVIEW_CLASSES |
+			ICC_NATIVEFNTCTL_CLASS |
+			ICC_PAGESCROLLER_CLASS |
+			ICC_PROGRESS_CLASS |
+			ICC_STANDARD_CLASSES |
+			ICC_TAB_CLASSES |
+			ICC_TREEVIEW_CLASSES |
+			ICC_UPDOWN_CLASS |
+			ICC_USEREX_CLASSES |
+			ICC_WIN95_CLASSES;
+		InitCommonControlsEx(&iccex);
 
 	// TODO: Place code here.
 	MSG msg;
@@ -130,23 +151,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HGLRC		hRC;               // Permenant Rendering context
 	static HMENU		hMenu;
 	static HWND
-		hwndFirstSTLBorderColorButton,
-		hwndFirstSTLSurfaceColorButton,
+		hwndBorderColorButton,
+		hwndSurfaceColorButton,
 		hwndOpenGLStatic,
-		hwndSecondSTLBorderColorButton,
-		hwndSecondSTLSurfaceColorButton,
+		hwndShowCheckBox,
+		hwndSTLComboBox,
 		hwndZoomInButton,
 		hwndZoomOutButton;
 	static int
 		cxButton,
 		cxChar,
 		cxClient,
+		cxSTLComboBox,
 		cyButton,
 		cyChar,
 		cyClient,
 		cxOpenGLStatic,
 		cyOpenGLStatic,
 		cySpacing,
+		iItemIndex,
+		xBorderColorButton,
+		xSurfaceColorButton,
 		xStartingPos,
 		yStartingPos;
 	LRESULT				lResult;
@@ -154,7 +179,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT			ps;
 	static TCHAR		szFirstSTLPath[MAX_PATH], szSecondSTLPath[MAX_PATH];       // buffer for file name	
 	STLFile*			temp;	
-	static std::vector<STLFile*>::iterator p;
+	static std::vector<STLFile*>::iterator p;	
+	static char szListItem[MAXSOLIDCHAR];
 
 	switch (message)
 	{
@@ -162,64 +188,60 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:	
 		cxChar = LOWORD(GetDialogBaseUnits());
 		cyChar = HIWORD(GetDialogBaseUnits());
-		cyButton = cxButton = LEFTTOOLBARWIDTH - 2 * cxChar;
-		cySpacing = cyChar / 2;
+		cyButton = cxButton = 40;
+		cySpacing = cyChar / 2;		
 
 		hwndOpenGLStatic = CreateWindow(TEXT("static"), NULL,
 			WS_CHILD | WS_VISIBLE,
-			LEFTTOOLBARWIDTH, 0, 200, 200,
+			LEFTTOOLBARWIDTH, TOPTOOLBARHEIGHT, 200, 200,
 			hWnd, (HMENU) ID_OPENGLSTATIC, hInst, NULL);
 
-		hwndZoomInButton = CreateWindow(TEXT("button"), TEXT("Zoom\nIn"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
-			cxChar, 0, cxButton, cyButton - 10,
+		hwndZoomInButton = CreateWindow(TEXT("button"), TEXT("Zoom In"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			cxChar, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_ZOOMINBUTTON, hInst, NULL);
 
 		hwndZoomOutButton = CreateWindow(TEXT("button"), TEXT("Zoom Out"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_BITMAP,
-			cxChar, cyButton + cySpacing, cxButton, cyButton,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			cxChar, cyButton + 2 * cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_ZOOMOUTBUTTON, hInst, NULL);
 
-		hwndFirstSTLBorderColorButton = CreateWindow(TEXT("button"),
-			TEXT("Border Color of First STL"),
+		hwndBorderColorButton = CreateWindow(TEXT("button"),
+			TEXT("Border Color"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
-			cxChar, 2 * (cyButton + cySpacing), cxButton, cyButton,
-			hWnd, (HMENU) ID_FIRSTSTLBORDERCOLORBUTTON, hInst, NULL);
+			0, 0, 0, 0,
+			hWnd, (HMENU) ID_BORDERCOLORBUTTON, hInst, NULL);
 
-
-		hwndFirstSTLSurfaceColorButton = CreateWindow(TEXT("button"),
-			TEXT("Surface Color of First STL"),
+		hwndSurfaceColorButton = CreateWindow(TEXT("button"),
+			TEXT("Surface Color"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
-			cxChar, 3 * (cyButton + cySpacing), cxButton, cyButton,
-			hWnd, (HMENU) ID_FIRSTSTLSURFACECOLORBUTTON, hInst, NULL);
+			0, 0, 0, 0,
+			hWnd, (HMENU) ID_SURFACECOLORBUTTON, hInst, NULL);
 
+		hwndSTLComboBox = CreateWindowA(WC_COMBOBOXA, NULL, 
+			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
+			LEFTTOOLBARWIDTH,  cySpacing, 10, 10,
+			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
 
-		hwndSecondSTLBorderColorButton = CreateWindow(TEXT("button"),
-			TEXT("Border Color of Second STL"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
-			cxChar, 4 * (cyButton + cySpacing), cxButton, cyButton,
-			hWnd, (HMENU) ID_SECONDSTLBORDERCOLORBUTTON, hInst, NULL);
+		hwndShowCheckBox = CreateWindow(WC_BUTTON,
+			TEXT("Show"),
+			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_TEXT,
+			0, 0, 0, 0,
+			hWnd, (HMENU) ID_SHOWCHECKBOX, hInst, NULL);
 
-
-		hwndSecondSTLSurfaceColorButton = CreateWindow(TEXT("button"),
-			TEXT("Surface Color of Second STL"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
-			cxChar, 5 * (cyButton + cySpacing), cxButton, cyButton,
-			hWnd, (HMENU) ID_SECONDSTLSURFACECOLORBUTTON, hInst, NULL);
-
-		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDB_ZOOMIN),
-			IMAGE_BITMAP, cxButton, cyButton, 0);
+		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
+			IMAGE_ICON, cxButton, cyButton, 0);
 		if (hZoomInImage == NULL)
 			ErrorExit(TEXT("LoadImage"));
 		else
-			lResult = SendMessage(hwndZoomInButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hZoomInImage);
+			lResult = SendMessage(hwndZoomInButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomInImage);
 
-		hZoomOutImage = LoadImage(hInst, MAKEINTRESOURCE(IDB_ZOOMOUT),
-			IMAGE_BITMAP, cxButton, cyButton, 0);
+		hZoomOutImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMOUT),
+			IMAGE_ICON, cxButton, cyButton, 0);
 		if (hZoomOutImage == NULL)
 			ErrorExit(TEXT("LoadImage"));
 		else
-			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hZoomOutImage);
+			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomOutImage);
 
 		/*OpenGLStaticDefProc = (WNDPROC)SetWindowLongPtr(
 		hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
@@ -262,6 +284,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					(*p)->yRot = 0;
 					(*p)->xRot = 0;
 				}
+				SendMessageA(hwndSTLComboBox, (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) temp->getName()); 
 				ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
 				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			}
@@ -289,6 +312,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 
+		case ID_STLCOMBOBOX:			
+			switch (wmEvent)
+			{
+			case CBN_SELCHANGE:				
+				iItemIndex = SendMessage(hwndSTLComboBox, CB_GETCURSEL, 
+					(WPARAM) 0, (LPARAM) 0);
+				SendMessageA(hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+			}
+			break;
+
+		case ID_BORDERCOLORBUTTON:
+			iItemIndex = SendMessage(hwndSTLComboBox, CB_GETCURSEL, 
+				(WPARAM) 0, (LPARAM) 0);
+			SendMessageA(hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				if (strcmp((*p)->getName(), szListItem) == 0)
+				{
+					(*p)->promptBorderColor(hWnd);					
+					RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+					break;
+				}
+			}
+			break;
+
+		case ID_SURFACECOLORBUTTON:
+			iItemIndex = SendMessage(hwndSTLComboBox, CB_GETCURSEL, 
+				(WPARAM) 0, (LPARAM) 0);
+			SendMessageA(hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				if (strcmp((*p)->getName(), szListItem) == 0)
+				{
+					(*p)->promptSurfaceColor(hWnd);					
+					RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+					break;
+				}
+			}
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -313,12 +376,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		yStartingPos = HIWORD(lParam);
 		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 		{
-			(*p)->yBaseRot = (int)(*p)->yRot % 360;
-			(*p)->xBaseRot = (int)(*p)->xRot % 360;
+			(*p)->yBaseRot = (GLfloat)((int)(*p)->yRot % 360);
+			(*p)->xBaseRot = (GLfloat)((int)(*p)->xRot % 360);
 		}
 		return 0 ;
 
 	case WM_MOUSEMOVE:
+		if (xStartingPos < LEFTTOOLBARWIDTH)
+			return 0;
 		if (wParam & MK_LBUTTON)
 		{
 			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
@@ -342,13 +407,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					yhalf = cyClient / 2,
 					xtocheck, ytocheck;
 
-				xtocheck = (xStartingPos - xhalf) / xRatio;
+				xtocheck = (int)((xStartingPos - xhalf) / xRatio);
 
-				ytocheck = (yhalf - yStartingPos) / yRatio;
+				ytocheck = (int)((yhalf - yStartingPos) / yRatio);
 
 				if ((*p)->Inside(xtocheck, ytocheck))
 				{
-					(*p)->bShow = !(*p)->bShow;
+					iItemIndex = SendMessageA(hwndSTLComboBox, CB_SELECTSTRING, -1, (LPARAM) (*p)->getName());
 					break;
 				}
 			}
@@ -404,13 +469,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cxClient = LOWORD(lParam);
 		cyClient = HIWORD(lParam);
 		cxOpenGLStatic = cxClient - LEFTTOOLBARWIDTH;
-		cyOpenGLStatic = cyClient;
+		cyOpenGLStatic = cyClient - TOPTOOLBARHEIGHT;
+		cxSTLComboBox = 100;
+		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
+		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;
 
 		// Call our function which modifies the clipping
 		// volume and viewport		
 		ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
-		MoveWindow(hwndOpenGLStatic, LEFTTOOLBARWIDTH, 0, cxOpenGLStatic, cyOpenGLStatic, FALSE);
-		MoveWindow(hwndZoomInButton, cxChar, 0, cxButton, cyButton, TRUE);
+
+		MoveWindow(hwndOpenGLStatic, LEFTTOOLBARWIDTH, TOPTOOLBARHEIGHT, cxOpenGLStatic, cyOpenGLStatic, FALSE);
+		MoveWindow(hwndSTLComboBox, LEFTTOOLBARWIDTH, cySpacing, cxSTLComboBox, TOPTOOLBARHEIGHT, FALSE);
+		MoveWindow(hwndBorderColorButton, xBorderColorButton, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndSurfaceColorButton, xSurfaceColorButton, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndShowCheckBox, xSurfaceColorButton + cxButton + 2 * cxChar, cySpacing, cxChar * 10, cyChar, TRUE);
 		return 0;
 
 	case WM_KEYDOWN:
@@ -455,9 +527,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Deselect the current rendering context and delete it
 		wglMakeCurrent(hdcOpenGLStatic,NULL);
 		wglDeleteContext(hRC);
-
 		if(hPalette != NULL)
 			DeleteObject(hPalette);
+
 		PostQuitMessage(0);
 		return 0;
 

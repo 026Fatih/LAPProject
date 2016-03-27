@@ -1,4 +1,8 @@
 #pragma once
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 
 #include "resource.h"
 #include "Triangle.h"
@@ -7,13 +11,15 @@
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2
 #define ID_ZOOMOUTBUTTON				3
-#define	ID_FIRSTSTLBORDERCOLORBUTTON	4
-#define	ID_FIRSTSTLSURFACECOLORBUTTON	5
-#define	ID_SECONDSTLBORDERCOLORBUTTON	6
-#define	ID_SECONDSTLSURFACECOLORBUTTON	7
+#define	ID_BORDERCOLORBUTTON			4
+#define	ID_SURFACECOLORBUTTON			5
+#define ID_STLCOMBOBOX					6
+#define ID_SHOWCHECKBOX					7
 
-#define MAX_LOADSTRING 100
+#define MAX_LOADSTRING		100
+#define MAXSOLIDCHAR		100
 #define	LEFTTOOLBARWIDTH	70
+#define	TOPTOOLBARHEIGHT	70
 
 // Global Variables:
 HINSTANCE hInst;								// current instance

@@ -14,7 +14,9 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define	ID_BORDERCOLORBUTTON			4
 #define	ID_SURFACECOLORBUTTON			5
 #define ID_STLCOMBOBOX					6
-#define ID_SHOWHIDEBUTTON					7
+#define ID_SHOWHIDEBUTTON				7
+#define ID_ROTATIONMODEBUTTON			8
+#define ID_MOVEMODEBUTTON				9
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100
@@ -33,10 +35,13 @@ GLfloat yRot = 0.0f;
 GLfloat xRatio, yRatio;
 
 STLFile
-FirstSTLFile,
-SecondSTLFile;
+	FirstSTLFile,
+	SecondSTLFile;
 
-GLfloat maxCoordinate = 0;
+GLfloat
+	maxCoordinate = 0,
+	xMove = 0,
+	yMove = 0;
 
 HPALETTE hPalette = NULL;
 

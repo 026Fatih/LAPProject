@@ -145,13 +145,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int					wmId, wmEvent;
-	static BOOL			bFirstSTLOpened, bSecondSTLOpened;
+	static BOOL			bFirstSTLOpened, bSecondSTLOpened, bRotationMode = TRUE;
 	static HANDLE		hZoomInImage, hZoomOutImage;
 	static HDC			hdcOpenGLStatic, hdcMain;
 	static HGLRC		hRC;               // Permenant Rendering context
 	static HMENU		hMenu;
 	static HWND
 		hwndBorderColorButton,
+		hwndMoveDown,
+		hwndMoveLeft,
+		hwndMoveRight,
+		hwndMoveUp,
 		hwndOpenGLStatic,
 		hwndShowHideButton,
 		hwndSTLComboBox,
@@ -170,9 +174,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyOpenGLStatic,
 		cySpacing,
 		iItemIndex,
+		xMoveBase,
 		xBorderColorButton,
 		xSurfaceColorButton,
 		xStartingPos,
+		yMoveBase,
 		yStartingPos;
 	LRESULT				lResult;
 	static OPENFILENAME	ofnFirstSTL, ofnSecondSTL;       // common dialog box structure
@@ -205,6 +211,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			cxChar, cyButton + 2 * cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_ZOOMOUTBUTTON, hInst, NULL);
+
+		hwndMoveDown = CreateWindow(TEXT("button"), TEXT("Rotation Mode"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 2 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_ROTATIONMODEBUTTON, hInst, NULL);
+
+		hwndMoveLeft = CreateWindow(TEXT("button"), TEXT("Move Mode"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
 
 		hwndBorderColorButton = CreateWindow(TEXT("button"),
 			TEXT("Border Color"),
@@ -307,6 +323,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetFocus(hWnd);
 			break;
 
+		case ID_MOVEMODEBUTTON:
+			bRotationMode = FALSE;
+			break;
+
+		case ID_ROTATIONMODEBUTTON:
+			bRotationMode = TRUE;
+			break;
+
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
@@ -388,19 +412,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		xStartingPos = LOWORD(lParam); 
 		yStartingPos = HIWORD(lParam);
-		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+		if (bRotationMode)
 		{
-			(*p)->yBaseRot = (GLfloat)((int)(*p)->yRot % 360);
-			(*p)->xBaseRot = (GLfloat)((int)(*p)->xRot % 360);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->yBaseRot = (GLfloat)((int)(*p)->yRot % 360);
+				(*p)->xBaseRot = (GLfloat)((int)(*p)->xRot % 360);
+			}
+		}
+		else
+		{
+			xMoveBase = xMove;
+			yMoveBase = yMove;
 		}
 		return 0 ;
 
 	case WM_RBUTTONDOWN:
 		xStartingPos = LOWORD(lParam); 
 		yStartingPos = HIWORD(lParam);
-		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+		if (bRotationMode)
 		{
-			(*p)->zBaseRot = (GLfloat)((int)(*p)->zRot % 360);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->zBaseRot = (GLfloat)((int)(*p)->zRot % 360);
+			}
 		}
 		return 0 ;
 
@@ -408,24 +443,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (xStartingPos < LEFTTOOLBARWIDTH ||
 			yStartingPos < TOPTOOLBARHEIGHT)
 			return 0;
-		if (wParam & MK_LBUTTON)
+		if (bRotationMode)
 		{
-			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			if (wParam & MK_LBUTTON)
 			{
-				(*p)->yRot = (*p)->yBaseRot + xStartingPos - LOWORD(lParam);
-				(*p)->xRot = (*p)->xBaseRot + yStartingPos - HIWORD(lParam);
+				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+				{
+					(*p)->yRot = (*p)->yBaseRot + xStartingPos - LOWORD(lParam);
+					(*p)->xRot = (*p)->xBaseRot + yStartingPos - HIWORD(lParam);
+				}
+				InvalidateRect(hWnd, NULL, FALSE);
+			}
+
+			else if (wParam & MK_RBUTTON)
+			{
+				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+				{
+					(*p)->zRot = (*p)->zBaseRot + xStartingPos - LOWORD(lParam);
+				}
+				InvalidateRect(hWnd, NULL, FALSE);
+			}
+		}
+		else
+		{
+			if (wParam & MK_LBUTTON)
+			{
+				xMove = xMoveBase + (xStartingPos - LOWORD(lParam)) / xRatio;
+				yMove = yMoveBase - (yStartingPos - HIWORD(lParam)) / yRatio;
+				ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
+				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			}
 		}
 
-		else if (wParam & MK_RBUTTON)
-		{
-			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
-			{
-				(*p)->zRot = (*p)->zBaseRot + xStartingPos - LOWORD(lParam);
-			}
-		}
-
-		InvalidateRect(hWnd, NULL, FALSE);
 		return 0 ;
 
 	case WM_LBUTTONDBLCLK:
@@ -760,20 +809,20 @@ void ChangeSize(GLsizei w, GLsizei h)
 	// Establish clipping volume (left, right, bottom, top, near, far)
 	if (w <= h) 
 	{
-		glOrtho(-maxCoordinate,
-			maxCoordinate,
-			(-maxCoordinate) * (GLfloat)h / w,
-			maxCoordinate * (GLfloat)h / w,
+		glOrtho(-maxCoordinate + xMove,
+			maxCoordinate + xMove,
+			(-maxCoordinate) * (GLfloat)h / w + yMove,
+			maxCoordinate * (GLfloat)h / w + yMove,
 			maxCoordinate, -maxCoordinate);
 		xRatio = w / (2 * maxCoordinate);
 		yRatio = h / (2 * maxCoordinate * ((GLfloat)h / w));
 	}
 	else 
 	{
-		glOrtho(-maxCoordinate * (GLfloat)w / h,
-			maxCoordinate * (GLfloat)w / h,
-			-maxCoordinate,
-			maxCoordinate,
+		glOrtho(-maxCoordinate * (GLfloat)w / h + xMove,
+			maxCoordinate * (GLfloat)w / h + xMove,
+			-maxCoordinate + yMove,
+			maxCoordinate + yMove,
 			maxCoordinate, -maxCoordinate);
 		xRatio = w / (2 * maxCoordinate * ((GLfloat)w / h));
 		yRatio = h / (2 * maxCoordinate);
@@ -781,27 +830,6 @@ void ChangeSize(GLsizei w, GLsizei h)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
-
-
-LRESULT CALLBACK OpenGLStaticProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	static std::vector<STLFile*>::iterator p;
-	switch (message)
-	{
-	case WM_MOUSEMOVE:
-		if (wParam & MK_LBUTTON)
-		{
-			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
-			{
-				(*p)->incrementXRot(-5.0f);
-			}
-		}
-
-		InvalidateRect(GetParent(hwnd), NULL, FALSE);
-		return 0 ;
-	}
-	return CallWindowProc(OpenGLStaticDefProc, hwnd, message, wParam, lParam);
 }
 
 void ComboBoxSelChange(HWND *hwndSTLComboBox, HWND* hwndShowHideButton, HWND* hwndMain)

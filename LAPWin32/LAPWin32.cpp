@@ -146,17 +146,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int					wmId, wmEvent;
 	static BOOL			bFirstSTLOpened, bSecondSTLOpened, bRotationMode = TRUE;
-	static HANDLE		hZoomInImage, hZoomOutImage;
+	static HANDLE
+		hMoveModeIcon,
+		hZoomInImage,
+		hZoomOutImage;
 	static HDC			hdcOpenGLStatic, hdcMain;
 	static HGLRC		hRC;               // Permenant Rendering context
 	static HMENU		hMenu;
 	static HWND
 		hwndBorderColorButton,
-		hwndMoveDown,
-		hwndMoveLeft,
-		hwndMoveRight,
-		hwndMoveUp,
+		hwndMoveMode,
 		hwndOpenGLStatic,
+		hwndRotationMode,
 		hwndShowHideButton,
 		hwndSTLComboBox,
 		hwndSurfaceColorButton,
@@ -212,13 +213,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			cxChar, cyButton + 2 * cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_ZOOMOUTBUTTON, hInst, NULL);
 
-		hwndMoveDown = CreateWindow(TEXT("button"), TEXT("Rotation Mode"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+		hwndRotationMode = CreateWindow(TEXT("button"), TEXT("Rotation Mode"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			cxChar, 2 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_ROTATIONMODEBUTTON, hInst, NULL);
 
-		hwndMoveLeft = CreateWindow(TEXT("button"), TEXT("Move Mode"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+		hwndMoveMode= CreateWindow(TEXT("button"), TEXT("Move Mode"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
 
@@ -258,6 +259,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ErrorExit(TEXT("LoadImage"));
 		else
 			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomOutImage);
+
+		hMoveModeIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_MOVEMODE),
+			IMAGE_ICON, cxButton, cyButton, 0);
+		if (hMoveModeIcon == NULL)
+			ErrorExit(TEXT("LoadImage"));
+		else
+			lResult = SendMessage(hwndMoveMode, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hMoveModeIcon);
 
 		/*OpenGLStaticDefProc = (WNDPROC)SetWindowLongPtr(
 		hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/

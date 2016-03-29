@@ -78,6 +78,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="LAPWin32.ico" />
+    <None Include="move_mode.ico" />
     <None Include="ReadMe.txt" />
     <None Include="small.ico" />
     <None Include="zoom_in.bmp" />

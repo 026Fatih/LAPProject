@@ -152,10 +152,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HMENU		hMenu;
 	static HWND
 		hwndBorderColorButton,
-		hwndSurfaceColorButton,
 		hwndOpenGLStatic,
-		hwndShowCheckBox,
+		hwndShowHideButton,
 		hwndSTLComboBox,
+		hwndSurfaceColorButton,
 		hwndZoomInButton,
 		hwndZoomOutButton;
 	static int
@@ -223,11 +223,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			LEFTTOOLBARWIDTH,  cySpacing, 10, 10,
 			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
 
-		hwndShowCheckBox = CreateWindow(WC_BUTTON,
+		hwndShowHideButton = CreateWindow(WC_BUTTON,
 			TEXT("Show"),
-			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_TEXT,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			0, 0, 0, 0,
-			hWnd, (HMENU) ID_SHOWCHECKBOX, hInst, NULL);
+			hWnd, (HMENU) ID_SHOWHIDEBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, cxButton, cyButton, 0);
@@ -281,8 +281,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				STLFileVector.push_back(temp);
 				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 				{
-					(*p)->yRot = 0;
-					(*p)->xRot = 0;
+					(*p)->ResetRotation();
 				}
 				SendMessageA(hwndSTLComboBox, (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) temp->getName()); 
 				ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
@@ -316,9 +315,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (wmEvent)
 			{
 			case CBN_SELCHANGE:				
-				iItemIndex = SendMessage(hwndSTLComboBox, CB_GETCURSEL, 
-					(WPARAM) 0, (LPARAM) 0);
-				SendMessageA(hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+				ComboBoxSelChange(&hwndSTLComboBox, &hwndShowHideButton, &hWnd);
+				break;
 			}
 			break;
 
@@ -352,6 +350,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 
+		case ID_SHOWHIDEBUTTON:
+			iItemIndex = SendMessage(hwndSTLComboBox, CB_GETCURSEL, 
+				(WPARAM) 0, (LPARAM) 0);
+			SendMessageA(hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				if (strcmp((*p)->getName(), szListItem) == 0)
+				{
+					(*p)->bShow = !(*p)->bShow;
+					break;
+				}
+			}
+			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			ComboBoxSelChange(&hwndSTLComboBox, &hwndShowHideButton, &hWnd);
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -381,8 +395,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		return 0 ;
 
+	case WM_RBUTTONDOWN:
+		xStartingPos = LOWORD(lParam); 
+		yStartingPos = HIWORD(lParam);
+		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+		{
+			(*p)->zBaseRot = (GLfloat)((int)(*p)->zRot % 360);
+		}
+		return 0 ;
+
 	case WM_MOUSEMOVE:
-		if (xStartingPos < LEFTTOOLBARWIDTH)
+		if (xStartingPos < LEFTTOOLBARWIDTH ||
+			yStartingPos < TOPTOOLBARHEIGHT)
 			return 0;
 		if (wParam & MK_LBUTTON)
 		{
@@ -390,6 +414,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				(*p)->yRot = (*p)->yBaseRot + xStartingPos - LOWORD(lParam);
 				(*p)->xRot = (*p)->xBaseRot + yStartingPos - HIWORD(lParam);
+			}
+		}
+
+		else if (wParam & MK_RBUTTON)
+		{
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->zRot = (*p)->zBaseRot + xStartingPos - LOWORD(lParam);
 			}
 		}
 
@@ -401,19 +433,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		yStartingPos = HIWORD(lParam);
 		if (xStartingPos > LEFTTOOLBARWIDTH)
 		{
+			int xhalf = (cxClient - LEFTTOOLBARWIDTH) / 2,
+				yhalf = cyClient / 2,
+				xtocheck, ytocheck;
+
+			xtocheck = (int)((xStartingPos - xhalf) / xRatio);
+			ytocheck = (int)((yhalf - yStartingPos) / yRatio);
+
 			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 			{
-				int xhalf = (cxClient - LEFTTOOLBARWIDTH) / 2,
-					yhalf = cyClient / 2,
-					xtocheck, ytocheck;
-
-				xtocheck = (int)((xStartingPos - xhalf) / xRatio);
-
-				ytocheck = (int)((yhalf - yStartingPos) / yRatio);
-
 				if ((*p)->Inside(xtocheck, ytocheck))
 				{
 					iItemIndex = SendMessageA(hwndSTLComboBox, CB_SELECTSTRING, -1, (LPARAM) (*p)->getName());
+
+					ComboBoxSelChange(&hwndSTLComboBox, &hwndShowHideButton, &hWnd);
 					break;
 				}
 			}
@@ -482,7 +515,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		MoveWindow(hwndSTLComboBox, LEFTTOOLBARWIDTH, cySpacing, cxSTLComboBox, TOPTOOLBARHEIGHT, FALSE);
 		MoveWindow(hwndBorderColorButton, xBorderColorButton, cySpacing, cxButton, cyButton, TRUE);
 		MoveWindow(hwndSurfaceColorButton, xSurfaceColorButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndShowCheckBox, xSurfaceColorButton + cxButton + 2 * cxChar, cySpacing, cxChar * 10, cyChar, TRUE);
+		MoveWindow(hwndShowHideButton, xSurfaceColorButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);
 		return 0;
 
 	case WM_KEYDOWN:
@@ -769,4 +802,26 @@ LRESULT CALLBACK OpenGLStaticProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
 		return 0 ;
 	}
 	return CallWindowProc(OpenGLStaticDefProc, hwnd, message, wParam, lParam);
+}
+
+void ComboBoxSelChange(HWND *hwndSTLComboBox, HWND* hwndShowHideButton, HWND* hwndMain)
+{
+	char szListItem[MAXSOLIDCHAR];
+	int iItemIndex;	
+	std::vector<STLFile*>::iterator p;	
+	iItemIndex = SendMessage(*hwndSTLComboBox, CB_GETCURSEL, 
+		(WPARAM) 0, (LPARAM) 0);
+	SendMessageA(*hwndSTLComboBox, CB_GETLBTEXT, (WPARAM) iItemIndex, (LPARAM) szListItem);
+	for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+	{
+		if (strcmp((*p)->getName(), szListItem) == 0)
+		{
+			if ((*p)->bShow)
+				SetWindowText(*hwndShowHideButton, TEXT("Hide"));
+			else
+				SetWindowText(*hwndShowHideButton, TEXT("Show"));
+			RedrawWindow(*hwndMain, NULL, NULL, RDW_INTERNALPAINT);
+			break;
+		}
+	}
 }

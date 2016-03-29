@@ -34,7 +34,8 @@ public:
 		rSurface, gSurface, bSurface,
 		xBaseRot,	// Used when rotating with mouse
 		yBaseRot,	// Used when rotating with mouse
-		xRot, yRot;
+		zBaseRot,	// Used when rotating with mouse
+		xRot, yRot, zRot;
 	int				cTriangles;
 	OPENFILENAME	ofn;
 	TCHAR

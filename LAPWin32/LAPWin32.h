@@ -14,7 +14,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define	ID_BORDERCOLORBUTTON			4
 #define	ID_SURFACECOLORBUTTON			5
 #define ID_STLCOMBOBOX					6
-#define ID_SHOWCHECKBOX					7
+#define ID_SHOWHIDEBUTTON					7
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100
@@ -56,3 +56,4 @@ HPALETTE			GetOpenGLPalette(HDC hDC);
 void				ChangeSize(GLsizei w, GLsizei h);
 void				ErrorExit(LPTSTR lpszFunction);
 LRESULT CALLBACK	OpenGLStaticProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+void				ComboBoxSelChange(HWND *hwndSTLComboBox, HWND* hwndShowCheckBox, HWND* hwndMain);

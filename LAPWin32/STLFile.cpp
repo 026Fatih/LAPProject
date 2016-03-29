@@ -33,6 +33,7 @@ void STLFile::draw(void)
 	glPushMatrix();
 	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);
 	glRotatef(this->yRot, 0.0f, 1.0f, 0.0f);	
+	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
 
 	for (i = 0; i < this->cTriangles; i++)
 	{
@@ -337,7 +338,7 @@ void STLFile::read(HWND *hwndOwner, GLfloat *maxCoordinate)
 
 void STLFile::ResetRotation()
 {
-	this->xRot = this->yRot = 0;
+	this->xRot = this->yRot = this->zRot = 0;
 }
 
 void STLFile::setSurfaceColor(COLORREF rgbSurface)

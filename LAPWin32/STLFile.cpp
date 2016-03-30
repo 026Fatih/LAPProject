@@ -7,10 +7,10 @@ STLFile::STLFile(void)
 	this->bShow = TRUE;
 	this->cTriangles = 0;
 	this->xRot = this->yRot = 0;
-	this->setSurfaceColor(RGB(0, 255, 0));
-	this->setBorderColor(RGB(255, 0, 0));
+	this->setSurfaceColor(RGB(64, 0, 64));
+	this->setBorderColor(RGB(128, 0, 64));
 	this->bLockRotation = FALSE;
-	this->triangles = new Triangle[MAXTRIANGLE];
+	//this->triangles = new Triangle[MAXTRIANGLE];
 }
 
 STLFile::STLFile(const TCHAR szSTLFilePath[], int *maxX, int *maxY, int *maxZ)
@@ -20,9 +20,11 @@ STLFile::STLFile(const TCHAR szSTLFilePath[], int *maxX, int *maxY, int *maxZ)
 
 STLFile::~STLFile(void)
 {
-	delete[] this->triangles;
 	if (this->bOpened)
+	{		
+		delete[] this->triangles;
 		delete this->szSolidName;
+	}
 }
 
 void STLFile::draw(void)
@@ -45,7 +47,7 @@ void STLFile::draw(void)
 	glPopMatrix();
 }
 void STLFile::draw(GLfloat rBorder, GLfloat gBorder, GLfloat bBorder,
-				   GLfloat rSurface, GLfloat  gSurface, GLfloat  bSurface)
+	GLfloat rSurface, GLfloat  gSurface, GLfloat  bSurface)
 {
 	int	i;
 	for (i = 0; i < this->cTriangles; i++)
@@ -60,9 +62,9 @@ int STLFile::GetTriangleCountFromSTLFile()
 	char szLine[MAXLINE], *pTemp;
 	std::ifstream	fileSTL;	
 	int cTriangle = 0;
-	
+
 	if (!this->bOpened)
-	return -1;	
+		return -1;	
 
 	fileSTL.open(this->ofn.lpstrFile);
 	fileSTL.getline(szLine, MAXLINE);
@@ -134,7 +136,7 @@ Point STLFile::GetBiggestXVertex()
 {
 	int		i;
 	Point	resultPoint(-FLT_MAX, 0, 0);
-	
+
 	for (i = 0; i < this->cTriangles; i++)
 	{
 		if (this->triangles[i].p1.x > resultPoint.x)
@@ -151,7 +153,7 @@ Point STLFile::GetSmallestXVertex()
 {
 	int		i;
 	Point	resultPoint(FLT_MAX, 0, 0);
-	
+
 	for (i = 0; i < this->cTriangles; i++)
 	{
 		if (this->triangles[i].p1.x < resultPoint.x)
@@ -168,7 +170,7 @@ Point STLFile::GetBiggestYVertex()
 {
 	int		i;
 	Point	resultPoint(0, -FLT_MAX, 0);
-	
+
 	for (i = 0; i < this->cTriangles; i++)
 	{
 		if (this->triangles[i].p1.y > resultPoint.y)
@@ -185,7 +187,7 @@ Point STLFile::GetSmallestYVertex()
 {
 	int		i;
 	Point	resultPoint(0, FLT_MAX, 0);
-	
+
 	for (i = 0; i < this->cTriangles; i++)
 	{
 		if (this->triangles[i].p1.y < resultPoint.y)
@@ -264,10 +266,17 @@ void STLFile::read(HWND *hwndOwner, GLfloat *maxCoordinate)
 
 	if (!this->bOpened)
 		return;
+	if (!this->Ascii())
+	{
+		this->ReadBinary(maxCoordinate);
+		return;
+	}
+	int c = this->GetTriangleCountFromSTLFile();
+	this->triangles = new Triangle[c];
+
 	// Reading STL File
 	std::ifstream fileSTL;
 	char szLine[MAXLINE], *pTemp;
-	int i;
 
 	this->cTriangles = 0;
 	fileSTL.open(this->ofn.lpstrFile);
@@ -311,29 +320,46 @@ void STLFile::read(HWND *hwndOwner, GLfloat *maxCoordinate)
 	//End of reading
 
 	// Determine max and min coordinates
+	this->SetMaxCoordinate(maxCoordinate);
+}
+
+void STLFile::ReadBinary(GLfloat *maxCoordinate)
+{
+	DWORD	dw;
+	HANDLE	hBinarySTL;
+	int		i;
+	char	lpBuffer[100];
+
+	hBinarySTL = CreateFile(this->ofn.lpstrFile,
+		GENERIC_READ,
+		0, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+	ReadFile(hBinarySTL, lpBuffer, 80, &dw, NULL);
+	lpBuffer[80] = '\0';
+	this->setName(lpBuffer);
+
+	ReadFile(hBinarySTL, &(this->cTriangles), 4, &dw, NULL);
+	this->triangles = new Triangle[this->cTriangles];
 	for (i = 0; i < this->cTriangles; i++)
-	{
-		if (abs(this->triangles[i].p1.x) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p1.x);
-		if (abs(this->triangles[i].p2.x) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p2.x);
-		if (abs(this->triangles[i].p3.x) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p3.x);
+	{		
+		ReadFile(hBinarySTL, lpBuffer, 12, &dw, NULL);
 
-		if (abs(this->triangles[i].p1.y) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p1.y);
-		if (abs(this->triangles[i].p2.y) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p2.y);
-		if (abs(this->triangles[i].p3.y) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p3.y);			
+		ReadFile(hBinarySTL, &(this->triangles[i].p1.x), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p1.y), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p1.z), 4, &dw, NULL);
 
-		if (abs(this->triangles[i].p1.z) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p1.z);
-		if (abs(this->triangles[i].p2.z) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p2.z);
-		if (abs(this->triangles[i].p3.z) > *maxCoordinate)
-			*maxCoordinate = abs(triangles[i].p3.z);
-	}		
+		ReadFile(hBinarySTL, &(this->triangles[i].p2.x), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p2.y), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p2.z), 4, &dw, NULL);
+
+		ReadFile(hBinarySTL, &(this->triangles[i].p3.x), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p3.y), 4, &dw, NULL);
+		ReadFile(hBinarySTL, &(this->triangles[i].p3.z), 4, &dw, NULL);
+
+		ReadFile(hBinarySTL, lpBuffer, 2, &dw, NULL);
+	}
+	CloseHandle(hBinarySTL);
+	this->SetMaxCoordinate(maxCoordinate);
 }
 
 void STLFile::ResetRotation()
@@ -343,6 +369,7 @@ void STLFile::ResetRotation()
 
 void STLFile::setSurfaceColor(COLORREF rgbSurface)
 {
+	this->rgbSurface = rgbSurface;
 	this->rSurface = GetRValue(rgbSurface) / 255.0f;
 	this->gSurface = GetGValue(rgbSurface) / 255.0f;
 	this->bSurface = GetBValue(rgbSurface) / 255.0f;
@@ -350,6 +377,7 @@ void STLFile::setSurfaceColor(COLORREF rgbSurface)
 
 void STLFile::setBorderColor(COLORREF rgbBorder)
 {
+	this->rgbBorder = rgbBorder;
 	this->rBorder = GetRValue(rgbBorder) / 255.0f;
 	this->gBorder = GetGValue(rgbBorder) / 255.0f;
 	this->bBorder = GetBValue(rgbBorder) / 255.0f;
@@ -396,4 +424,61 @@ void STLFile::setName(char szName[])
 const char* STLFile::getName()
 {
 	return this->szSolidName;
+}
+
+BOOL STLFile::Ascii()
+{
+	HANDLE	hBinarySTL;
+	DWORD		c;
+	char	lpBuffer[81];
+	LARGE_INTEGER liFileSize;
+	unsigned int cTriangle;
+
+	hBinarySTL = CreateFile(this->ofn.lpstrFile,
+		GENERIC_READ,
+		0, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+	ReadFile(hBinarySTL, lpBuffer, 80, &c, NULL);	
+
+	lpBuffer[80] = '\0';	
+	if (strstr(lpBuffer, "solid") != NULL)
+	{		
+		ReadFile(hBinarySTL, &cTriangle, 4, &c, NULL);	
+		GetFileSizeEx(hBinarySTL, &liFileSize);		
+		CloseHandle(hBinarySTL);
+		if (liFileSize.QuadPart == ( 84 + cTriangle * 50))
+			return FALSE;
+		else
+			return TRUE;
+	}
+	CloseHandle(hBinarySTL);
+	return FALSE;
+}
+
+void STLFile::SetMaxCoordinate(GLfloat* maxCoordinate)
+{
+	int	i;
+	for (i = 0; i < this->cTriangles; i++)
+	{
+		if (abs(this->triangles[i].p1.x) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p1.x);
+		if (abs(this->triangles[i].p2.x) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p2.x);
+		if (abs(this->triangles[i].p3.x) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p3.x);
+
+		if (abs(this->triangles[i].p1.y) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p1.y);
+		if (abs(this->triangles[i].p2.y) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p2.y);
+		if (abs(this->triangles[i].p3.y) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p3.y);			
+
+		if (abs(this->triangles[i].p1.z) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p1.z);
+		if (abs(this->triangles[i].p2.z) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p2.z);
+		if (abs(this->triangles[i].p3.z) > *maxCoordinate)
+			*maxCoordinate = abs(triangles[i].p3.z);
+	}	
 }

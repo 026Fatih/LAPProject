@@ -22,18 +22,6 @@
     <None Include="LAPWin32.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="zoom_in.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="zoom_out.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="zoom_in.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="zoom_out.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="zoom_in.ico">
       <Filter>Resource Files</Filter>
     </None>

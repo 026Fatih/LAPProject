@@ -11,27 +11,27 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-	
-	INITCOMMONCONTROLSEX iccex;
+
+	/*INITCOMMONCONTROLSEX iccex;
 	iccex.dwICC = sizeof(iccex);
-		iccex.dwICC = ICC_ANIMATE_CLASS |
-			ICC_BAR_CLASSES|
-			ICC_COOL_CLASSES |
-			ICC_DATE_CLASSES |
-			ICC_HOTKEY_CLASS |
-			ICC_INTERNET_CLASSES |
-			ICC_LINK_CLASS |
-			ICC_LISTVIEW_CLASSES |
-			ICC_NATIVEFNTCTL_CLASS |
-			ICC_PAGESCROLLER_CLASS |
-			ICC_PROGRESS_CLASS |
-			ICC_STANDARD_CLASSES |
-			ICC_TAB_CLASSES |
-			ICC_TREEVIEW_CLASSES |
-			ICC_UPDOWN_CLASS |
-			ICC_USEREX_CLASSES |
-			ICC_WIN95_CLASSES;
-		InitCommonControlsEx(&iccex);
+	iccex.dwICC = ICC_ANIMATE_CLASS |
+		ICC_BAR_CLASSES|
+		ICC_COOL_CLASSES |
+		ICC_DATE_CLASSES |
+		ICC_HOTKEY_CLASS |
+		ICC_INTERNET_CLASSES |
+		ICC_LINK_CLASS |
+		ICC_LISTVIEW_CLASSES |
+		ICC_NATIVEFNTCTL_CLASS |
+		ICC_PAGESCROLLER_CLASS |
+		ICC_PROGRESS_CLASS |
+		ICC_STANDARD_CLASSES |
+		ICC_TAB_CLASSES |
+		ICC_TREEVIEW_CLASSES |
+		ICC_UPDOWN_CLASS |
+		ICC_USEREX_CLASSES |
+		ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&iccex);*/
 
 	// TODO: Place code here.
 	MSG msg;
@@ -146,6 +146,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int					wmId, wmEvent;
 	static BOOL			bFirstSTLOpened, bSecondSTLOpened, bRotationMode = TRUE;
+	static GLfloat		
+		xMoveBase,
+		yMoveBase;
 	static HANDLE
 		hBorderColorIcon,
 		hSurfaceColorIcon,
@@ -160,6 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hwndBorderColorButton,
 		hwndMoveMode,
 		hwndOpenGLStatic,
+		hwndResetRotation,
 		hwndRotationMode,
 		hwndShowHideButton,
 		hwndSTLComboBox,
@@ -178,11 +182,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyOpenGLStatic,
 		cySpacing,
 		iItemIndex,
-		xMoveBase,
 		xBorderColorButton,
 		xSurfaceColorButton,
 		xStartingPos,
-		yMoveBase,
 		yStartingPos;
 	LRESULT				lResult;
 	static OPENFILENAME	ofnFirstSTL, ofnSecondSTL;       // common dialog box structure
@@ -225,6 +227,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
+		
+		hwndShowHideButton = CreateWindow(WC_BUTTON,
+			TEXT("Reset Rotation"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 4 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_RESETROTATIONBUTTON, hInst, NULL);
 
 		hwndBorderColorButton = CreateWindow(TEXT("button"),
 			TEXT("Border Color"),
@@ -248,6 +256,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_SHOWHIDEBUTTON, hInst, NULL);
+
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
@@ -404,6 +413,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ComboBoxSelChange(&hwndSTLComboBox, &hwndShowHideButton, &hWnd);
 			break;
 
+		case ID_RESETROTATIONBUTTON:
+			for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+			{
+				(*p)->ResetRotation();
+			}
+			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -463,8 +480,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 				{
-					(*p)->yRot = (*p)->yBaseRot + xStartingPos - LOWORD(lParam);
-					(*p)->xRot = (*p)->xBaseRot + yStartingPos - HIWORD(lParam);
+					(*p)->yRot = (*p)->yBaseRot + (xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;
+					(*p)->xRot = (*p)->xBaseRot + (yStartingPos - HIWORD(lParam)) * ROTATIONRATIO;
 				}
 				InvalidateRect(hWnd, NULL, FALSE);
 			}
@@ -473,7 +490,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 				{
-					(*p)->zRot = (*p)->zBaseRot + xStartingPos - LOWORD(lParam);
+					(*p)->zRot = (*p)->zBaseRot + (xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;
 				}
 				InvalidateRect(hWnd, NULL, FALSE);
 			}
@@ -566,7 +583,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyClient = HIWORD(lParam);
 		cxOpenGLStatic = cxClient - LEFTTOOLBARWIDTH;
 		cyOpenGLStatic = cyClient - TOPTOOLBARHEIGHT;
-		cxSTLComboBox = 100;
+		cxSTLComboBox = 500;
 		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
 		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;
 
@@ -827,7 +844,7 @@ void ChangeSize(GLsizei w, GLsizei h)
 			maxCoordinate + xMove,
 			(-maxCoordinate) * (GLfloat)h / w + yMove,
 			maxCoordinate * (GLfloat)h / w + yMove,
-			maxCoordinate, -maxCoordinate);
+			1000, -1000);
 		xRatio = w / (2 * maxCoordinate);
 		yRatio = h / (2 * maxCoordinate * ((GLfloat)h / w));
 	}
@@ -837,7 +854,7 @@ void ChangeSize(GLsizei w, GLsizei h)
 			maxCoordinate * (GLfloat)w / h + xMove,
 			-maxCoordinate + yMove,
 			maxCoordinate + yMove,
-			maxCoordinate, -maxCoordinate);
+			1000, -1000);
 		xRatio = w / (2 * maxCoordinate * ((GLfloat)w / h));
 		yRatio = h / (2 * maxCoordinate);
 	}

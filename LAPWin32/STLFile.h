@@ -19,6 +19,7 @@ private:
 	void	AlterPositionX(GLfloat amount);
 	void	AlterPositionY(GLfloat amount);
 	void	AlterPositionZ(GLfloat amount);
+	void	ReadBinary(GLfloat *maxCoordinate);
 public:
 	static const int
 		MERGE_POSITIVE_X = 1,
@@ -28,7 +29,10 @@ public:
 
 	BOOL			bOpened, bShow;
 	CHOOSECOLOR		cc;                 // common dialog box structure 
-	COLORREF		acrCustClr[16], rgbSurface, rgbBorder; // array of custom colors 
+	COLORREF
+		acrCustClr[16],	// array of custom colors 
+		rgbSurface,
+		rgbBorder; 
 	GLfloat
 		rBorder, gBorder, bBorder,
 		rSurface, gSurface, bSurface,
@@ -59,6 +63,7 @@ public:
 	*/
 	BOOL		Inside(int x, int y);
 	BOOL		Locked();
+	BOOL		Ascii();
 	void		LockRotation(BOOL bLock);
 	void		Merge(STLFile *s, int iMergePos);
 	void		promptSurfaceColor(HWND hwndOwner);
@@ -69,4 +74,5 @@ public:
 	void		setBorderColor(COLORREF rgbBorder);
 	const char*	getName();
 	void		setName(char szName[]);
+	void		SetMaxCoordinate(GLfloat* maxCoordinate);
 };

@@ -84,12 +84,8 @@
     <None Include="rotation_mode.ico" />
     <None Include="small.ico" />
     <None Include="surface_color.ico" />
-    <None Include="zoom_in.bmp" />
     <None Include="zoom_in.ico" />
-    <None Include="zoom_in.png" />
-    <None Include="zoom_out.bmp" />
     <None Include="zoom_out.ico" />
-    <None Include="zoom_out.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LAPWin32.h" />

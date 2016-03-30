@@ -17,11 +17,13 @@
 #define ID_SHOWHIDEBUTTON				7
 #define ID_ROTATIONMODEBUTTON			8
 #define ID_MOVEMODEBUTTON				9
+#define	ID_RESETROTATIONBUTTON			10
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100
 #define	LEFTTOOLBARWIDTH	70
 #define	TOPTOOLBARHEIGHT	70
+#define	ROTATIONRATIO		0.5f
 
 // Global Variables:
 HINSTANCE hInst;								// current instance

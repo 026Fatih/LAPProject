@@ -43,6 +43,15 @@
     <None Include="move_mode.ico">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="rotation_mode.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="border_color.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="surface_color.ico">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

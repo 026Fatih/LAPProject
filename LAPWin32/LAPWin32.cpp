@@ -147,7 +147,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int					wmId, wmEvent;
 	static BOOL			bFirstSTLOpened, bSecondSTLOpened, bRotationMode = TRUE;
 	static HANDLE
+		hBorderColorIcon,
+		hSurfaceColorIcon,
 		hMoveModeIcon,
+		hRotationModeIcon,
 		hZoomInImage,
 		hZoomOutImage;
 	static HDC			hdcOpenGLStatic, hdcMain;
@@ -225,13 +228,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		hwndBorderColorButton = CreateWindow(TEXT("button"),
 			TEXT("Border Color"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_BORDERCOLORBUTTON, hInst, NULL);
 
 		hwndSurfaceColorButton = CreateWindow(TEXT("button"),
 			TEXT("Surface Color"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON |BS_MULTILINE,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_SURFACECOLORBUTTON, hInst, NULL);
 
@@ -247,31 +250,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			hWnd, (HMENU) ID_SHOWHIDEBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
-			IMAGE_ICON, cxButton, cyButton, 0);
-		if (hZoomInImage == NULL)
-			ErrorExit(TEXT("LoadImage"));
-		else
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
 			lResult = SendMessage(hwndZoomInButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomInImage);
 
 		hZoomOutImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMOUT),
-			IMAGE_ICON, cxButton, cyButton, 0);
-		if (hZoomOutImage == NULL)
-			ErrorExit(TEXT("LoadImage"));
-		else
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
 			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomOutImage);
 
 		hMoveModeIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_MOVEMODE),
-			IMAGE_ICON, cxButton, cyButton, 0);
-		if (hMoveModeIcon == NULL)
-			ErrorExit(TEXT("LoadImage"));
-		else
-			lResult = SendMessage(hwndMoveMode, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hMoveModeIcon);
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
+		lResult = SendMessage(hwndMoveMode, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hMoveModeIcon);
+
+		hRotationModeIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_ROTATIONMODE),
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
+		lResult = SendMessage(hwndRotationMode, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hRotationModeIcon);
+
+		hBorderColorIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_BORDERCOLOR),
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
+		lResult = SendMessage(hwndBorderColorButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hBorderColorIcon);
+
+		hSurfaceColorIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_SURFACECOLOR),
+			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
+		lResult = SendMessage(hwndSurfaceColorButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hSurfaceColorIcon);
 
 		/*OpenGLStaticDefProc = (WNDPROC)SetWindowLongPtr(
 		hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
 
 		// Store the device context
-		hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
+			hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
 
 		// Select the pixel format
 		SetDCPixelFormat(hdcOpenGLStatic);          

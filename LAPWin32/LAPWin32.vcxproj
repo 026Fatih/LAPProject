@@ -77,10 +77,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="border_color.ico" />
     <None Include="LAPWin32.ico" />
     <None Include="move_mode.ico" />
     <None Include="ReadMe.txt" />
+    <None Include="rotation_mode.ico" />
     <None Include="small.ico" />
+    <None Include="surface_color.ico" />
     <None Include="zoom_in.bmp" />
     <None Include="zoom_in.ico" />
     <None Include="zoom_in.png" />

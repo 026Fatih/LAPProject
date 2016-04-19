@@ -85,6 +85,7 @@
     <None Include="small.ico" />
     <None Include="surface_color.ico" />
     <None Include="zoom_in.ico" />
+    <None Include="Zoom_In_Out.png" />
     <None Include="zoom_out.ico" />
   </ItemGroup>
   <ItemGroup>

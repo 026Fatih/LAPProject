@@ -161,8 +161,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HMENU		hMenu;
 	static HWND
 		hwndBorderColorButton,
+		hwndDemoButton,
 		hwndMoveMode,
 		hwndOpenGLStatic,
+		hwndRectangleButton,
 		hwndResetRotation,
 		hwndRotationMode,
 		hwndShowHideButton,
@@ -183,6 +185,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cySpacing,
 		iItemIndex,
 		xBorderColorButton,
+		xShowHideButton,
 		xSurfaceColorButton,
 		xStartingPos,
 		yStartingPos;
@@ -228,11 +231,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
 		
-		hwndShowHideButton = CreateWindow(WC_BUTTON,
-			TEXT("Reset Rotation"),
+		hwndShowHideButton = CreateWindow(WC_BUTTON, TEXT("Reset Rotation"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			cxChar, 4 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
-			hWnd, (HMENU) ID_RESETROTATIONBUTTON, hInst, NULL);
+			hWnd, (HMENU) ID_RESETROTATIONBUTTON, hInst, NULL);		
+
+		hwndDemoButton = CreateWindow(WC_BUTTON, TEXT("Demo"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 5 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_DEMOBUTTON, hInst, NULL);
 
 		hwndBorderColorButton = CreateWindow(TEXT("button"),
 			TEXT("Border Color"),
@@ -246,9 +253,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_SURFACECOLORBUTTON, hInst, NULL);
 
-		hwndSTLComboBox = CreateWindowA(WC_COMBOBOXA, NULL, 
-			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE,
-			LEFTTOOLBARWIDTH,  cySpacing, 10, 10,
+		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
+			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
+			LEFTTOOLBARWIDTH,  cySpacing, 10, 100,
 			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
 
 		hwndShowHideButton = CreateWindow(WC_BUTTON,
@@ -256,6 +263,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_SHOWHIDEBUTTON, hInst, NULL);
+
+		hwndRectangleButton = CreateWindow(TEXT("button"), TEXT("Rectangle"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			0, 0, 0, 0,
+			hWnd, (HMENU) ID_RECTANGLEBUTTON, hInst, NULL);
+
 
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
@@ -421,6 +434,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			break;
 
+		case ID_DEMOBUTTON:
+			SetTimer(hWnd, IDT_DEMO, 75, NULL);
+			break;
+
+		case ID_RECTANGLEBUTTON:
+
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -441,7 +462,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		xStartingPos = LOWORD(lParam); 
+		KillTimer(hWnd, IDT_DEMO);
+		xStartingPos = LOWORD(lParam);
 		yStartingPos = HIWORD(lParam);
 		if (bRotationMode)
 		{
@@ -585,17 +607,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyOpenGLStatic = cyClient - TOPTOOLBARHEIGHT;
 		cxSTLComboBox = 500;
 		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
-		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;
+		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;		
+		xShowHideButton = xSurfaceColorButton + cxButton + cxChar;
 
 		// Call our function which modifies the clipping
 		// volume and viewport		
 		ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
 
 		MoveWindow(hwndOpenGLStatic, LEFTTOOLBARWIDTH, TOPTOOLBARHEIGHT, cxOpenGLStatic, cyOpenGLStatic, FALSE);
-		MoveWindow(hwndSTLComboBox, LEFTTOOLBARWIDTH, cySpacing, cxSTLComboBox, TOPTOOLBARHEIGHT, FALSE);
+		MoveWindow(hwndSTLComboBox, LEFTTOOLBARWIDTH, cySpacing, cxSTLComboBox, 500, FALSE);
 		MoveWindow(hwndBorderColorButton, xBorderColorButton, cySpacing, cxButton, cyButton, TRUE);
 		MoveWindow(hwndSurfaceColorButton, xSurfaceColorButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndShowHideButton, xSurfaceColorButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndShowHideButton, xShowHideButton, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndRectangleButton, xShowHideButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);
 		return 0;
 
 	case WM_KEYDOWN:
@@ -634,6 +658,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			InvalidateRect(hWnd, NULL, FALSE);
 		}
+		return 0;
+
+	case WM_TIMER:
+		for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
+		{
+			(*p)->incrementYRot(2.0f);
+		}		
+		RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 		return 0;
 
 	case WM_DESTROY:

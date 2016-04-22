@@ -40,9 +40,6 @@
     <None Include="surface_color.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Zoom_In_Out.png">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

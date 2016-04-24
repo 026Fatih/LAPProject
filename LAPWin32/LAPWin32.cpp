@@ -15,22 +15,22 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	/*INITCOMMONCONTROLSEX iccex;
 	iccex.dwICC = sizeof(iccex);
 	iccex.dwICC = ICC_ANIMATE_CLASS |
-		ICC_BAR_CLASSES|
-		ICC_COOL_CLASSES |
-		ICC_DATE_CLASSES |
-		ICC_HOTKEY_CLASS |
-		ICC_INTERNET_CLASSES |
-		ICC_LINK_CLASS |
-		ICC_LISTVIEW_CLASSES |
-		ICC_NATIVEFNTCTL_CLASS |
-		ICC_PAGESCROLLER_CLASS |
-		ICC_PROGRESS_CLASS |
-		ICC_STANDARD_CLASSES |
-		ICC_TAB_CLASSES |
-		ICC_TREEVIEW_CLASSES |
-		ICC_UPDOWN_CLASS |
-		ICC_USEREX_CLASSES |
-		ICC_WIN95_CLASSES;
+	ICC_BAR_CLASSES|
+	ICC_COOL_CLASSES |
+	ICC_DATE_CLASSES |
+	ICC_HOTKEY_CLASS |
+	ICC_INTERNET_CLASSES |
+	ICC_LINK_CLASS |
+	ICC_LISTVIEW_CLASSES |
+	ICC_NATIVEFNTCTL_CLASS |
+	ICC_PAGESCROLLER_CLASS |
+	ICC_PROGRESS_CLASS |
+	ICC_STANDARD_CLASSES |
+	ICC_TAB_CLASSES |
+	ICC_TREEVIEW_CLASSES |
+	ICC_UPDOWN_CLASS |
+	ICC_USEREX_CLASSES |
+	ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&iccex);*/
 
 	// TODO: Place code here.
@@ -232,7 +232,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
-		
+
 		hwndShowHideButton = CreateWindow(WC_BUTTON, TEXT("Reset Rotation"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			cxChar, 4 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
@@ -278,11 +278,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
-			lResult = SendMessage(hwndZoomInButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomInImage);
+		lResult = SendMessage(hwndZoomInButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomInImage);
 
 		hZoomOutImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMOUT),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
-			lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomOutImage);
+		lResult = SendMessage(hwndZoomOutButton, BM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)hZoomOutImage);
 
 		hMoveModeIcon = LoadImage(hInst, MAKEINTRESOURCE(IDI_MOVEMODE),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
@@ -304,7 +304,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hwndOpenGLStatic, GWL_WNDPROC, (LONG)OpenGLStaticProc);*/
 
 		// Store the device context
-			hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
+		hdcOpenGLStatic = GetDC(hwndOpenGLStatic);              
 
 		// Select the pixel format
 		SetDCPixelFormat(hdcOpenGLStatic);          
@@ -445,6 +445,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case ID_RECTANGLEBUTTON:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_RECTANGLE), hWnd, Rectangle);
+			break;
+
+		case ID_LINEBUTTON:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_LINE), hWnd, LineDlgProc);
 			break;
 
 		default:
@@ -711,6 +715,25 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 INT_PTR CALLBACK Rectangle(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK LineDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)

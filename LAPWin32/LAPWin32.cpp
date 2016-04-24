@@ -162,6 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HWND
 		hwndBorderColorButton,
 		hwndDemoButton,
+		hwndLineButton,
 		hwndMoveMode,
 		hwndOpenGLStatic,
 		hwndRectangleButton,
@@ -185,6 +186,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cySpacing,
 		iItemIndex,
 		xBorderColorButton,
+		xLineButton,
 		xShowHideButton,
 		xSurfaceColorButton,
 		xStartingPos,
@@ -269,7 +271,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			0, 0, 0, 0,
 			hWnd, (HMENU) ID_RECTANGLEBUTTON, hInst, NULL);
 
-
+		hwndLineButton = CreateWindow(TEXT("button"), TEXT("Line"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			0, 0, 0, 0,
+			hWnd, (HMENU) ID_LINEBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
@@ -609,6 +614,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
 		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;		
 		xShowHideButton = xSurfaceColorButton + cxButton + cxChar;
+		xLineButton = xShowHideButton + cxButton + cxChar;
 
 		// Call our function which modifies the clipping
 		// volume and viewport		
@@ -619,7 +625,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		MoveWindow(hwndBorderColorButton, xBorderColorButton, cySpacing, cxButton, cyButton, TRUE);
 		MoveWindow(hwndSurfaceColorButton, xSurfaceColorButton, cySpacing, cxButton, cyButton, TRUE);
 		MoveWindow(hwndShowHideButton, xShowHideButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndRectangleButton, xShowHideButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndLineButton, xLineButton, cySpacing, cxButton, cyButton, TRUE);
+		MoveWindow(hwndRectangleButton, xLineButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);		
 		return 0;
 
 	case WM_KEYDOWN:

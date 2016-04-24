@@ -22,6 +22,7 @@
 #define	ID_DEMOBUTTON					11
 #define	IDT_DEMO						12
 #define ID_RECTANGLEBUTTON				13
+#define ID_LINEBUTTON					14
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100

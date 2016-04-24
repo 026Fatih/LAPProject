@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "Triangle.h"
 #include "STLFile.h"
+#include "Drawable.h"
 
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2
@@ -51,6 +52,7 @@ GLfloat
 HPALETTE hPalette = NULL;
 
 std::vector<STLFile*> STLFileVector;
+std::vector<Drawable> DrawableVector;
 
 WNDPROC OpenGLStaticDefProc;
 

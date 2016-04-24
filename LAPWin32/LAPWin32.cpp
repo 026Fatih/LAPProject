@@ -733,10 +733,16 @@ void RenderScene(void)
 	glLineWidth(fSizes[0]);		
 
 	static std::vector<STLFile*>::iterator p;
+	static std::vector<Drawable*>::iterator i;
 	for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 	{
 		if ((*p)->bShow)
 			(*p)->draw();
+	}
+
+	for(i = DrawableVector.begin(); i != DrawableVector.end(); i++)
+	{
+		(*i)->draw();
 	}
 
 	glFlush();

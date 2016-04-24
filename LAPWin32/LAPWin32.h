@@ -52,7 +52,7 @@ GLfloat
 HPALETTE hPalette = NULL;
 
 std::vector<STLFile*> STLFileVector;
-std::vector<Drawable> DrawableVector;
+std::vector<Drawable*> DrawableVector;
 
 WNDPROC OpenGLStaticDefProc;
 

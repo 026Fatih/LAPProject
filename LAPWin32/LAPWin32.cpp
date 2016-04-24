@@ -735,15 +735,41 @@ INT_PTR CALLBACK Rectangle(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 
 INT_PTR CALLBACK LineDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hwndx1Edit, hwndy1Edit, hwndz1Edit, hwndx2Edit, hwndy2Edit, hwndz2Edit;
+	TCHAR szBuffer[100];
+	int x1, y1, z1, x2, y2, z2;
+
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		hwndx1Edit = GetDlgItem(hDlg, IDC_EDITX1);
+		hwndy1Edit = GetDlgItem(hDlg, IDC_EDITY1);
+		hwndz1Edit = GetDlgItem(hDlg, IDC_EDITZ1);
+		hwndx2Edit = GetDlgItem(hDlg, IDC_EDITX2);
+		hwndy2Edit = GetDlgItem(hDlg, IDC_EDITY2);
+		hwndz2Edit = GetDlgItem(hDlg, IDC_EDITZ2);
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		if (LOWORD(wParam) == IDOK)
 		{
+			SendMessage(hwndx1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x1 = _tstoi(szBuffer);
+			SendMessage(hwndy1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y1 = _tstoi(szBuffer);
+			SendMessage(hwndz1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z1 = _tstoi(szBuffer);
+			SendMessage(hwndx2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x2 = _tstoi(szBuffer);
+			SendMessage(hwndy2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y2 = _tstoi(szBuffer);
+			SendMessage(hwndz2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z2 = _tstoi(szBuffer);
+
+			Line* line = new Line(x1, y1, z1, x2, y2, z2);
+			DrawableVector.push_back(line);
+
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}

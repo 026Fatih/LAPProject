@@ -8,6 +8,7 @@
 #include "Triangle.h"
 #include "STLFile.h"
 #include "Drawable.h"
+#include "Line.h"
 
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2

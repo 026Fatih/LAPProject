@@ -771,6 +771,7 @@ INT_PTR CALLBACK LineDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 			DrawableVector.push_back(line);
 
 			EndDialog(hDlg, LOWORD(wParam));
+			RedrawWindow(GetParent(hDlg), NULL, NULL, RDW_INTERNALPAINT);
 			return (INT_PTR)TRUE;
 		}
 		break;

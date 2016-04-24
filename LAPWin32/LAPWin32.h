@@ -47,7 +47,7 @@ STLFile
 	SecondSTLFile;
 
 GLfloat
-	maxCoordinate = 0,
+	maxCoordinate = 100,
 	xMove = 0,
 	yMove = 0;
 

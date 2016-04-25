@@ -18,7 +18,12 @@ Quadrilateral::Quadrilateral(int x1, int y1, int z1, int x2, int y2, int z2,
 void Quadrilateral::draw()
 {
 	for (int i = 0; i < 4; i++)
+	{
+		lines[i]->xRot = this->xRot;
+		lines[i]->yRot = this->yRot;
+		lines[i]->zRot = this->zRot;
 		lines[i]->draw();
+	}
 }
 
 Quadrilateral::~Quadrilateral(void)

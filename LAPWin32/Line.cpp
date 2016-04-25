@@ -14,6 +14,8 @@ Line::Line(int xS, int yS, int zS, int xE, int yE, int zE)
 	this->endPoint.x = xE;
 	this->endPoint.y = yE;
 	this->endPoint.z = zE;
+
+	this->xRot = this->yRot = this->zRot = 0;
 }
 
 Line::~Line(void)

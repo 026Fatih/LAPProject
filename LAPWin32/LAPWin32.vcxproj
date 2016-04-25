@@ -92,6 +92,7 @@
     <ClInclude Include="LAPWin32.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Quadrilateral.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STLFile.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="LAPWin32.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Quadrilateral.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

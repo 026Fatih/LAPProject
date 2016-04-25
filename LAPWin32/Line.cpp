@@ -23,6 +23,9 @@ Line::~Line(void)
 void Line::draw()
 {
 	glPushMatrix();
+	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(this->yRot, 0.0f, 1.0f, 0.0f);	
+	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_LINES);
 	glVertex3f(startPoint.x, startPoint.y, startPoint.z);
 	glVertex3f(endPoint.x, endPoint.y, endPoint.z);

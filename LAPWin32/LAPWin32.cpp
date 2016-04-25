@@ -437,6 +437,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				(*p)->ResetRotation();
 			}
+			for(DrawableIterator = DrawableVector.begin();
+				DrawableIterator != DrawableVector.end(); DrawableIterator++)
+			{
+				(*DrawableIterator)->xRot = (*DrawableIterator)->yRot = (*DrawableIterator)->zRot = 0;
+			}
 			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			break;
 

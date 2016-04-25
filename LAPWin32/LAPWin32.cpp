@@ -744,16 +744,61 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 INT_PTR CALLBACK Rectangle(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static HWND hwndx1Edit, hwndy1Edit, hwndz1Edit, hwndx2Edit, hwndy2Edit, hwndz2Edit,
+		hwndx3Edit, hwndy3Edit, hwndz3Edit, hwndx4Edit, hwndy4Edit, hwndz4Edit;
+	TCHAR szBuffer[100];
+	int x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4;
+
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		hwndx1Edit = GetDlgItem(hDlg, IDC_EDITX1);
+		hwndy1Edit = GetDlgItem(hDlg, IDC_EDITY1);
+		hwndz1Edit = GetDlgItem(hDlg, IDC_EDITZ1);
+		hwndx2Edit = GetDlgItem(hDlg, IDC_EDITX2);
+		hwndy2Edit = GetDlgItem(hDlg, IDC_EDITY2);
+		hwndz2Edit = GetDlgItem(hDlg, IDC_EDITZ2);
+		hwndx3Edit = GetDlgItem(hDlg, IDC_EDITX3);
+		hwndy3Edit = GetDlgItem(hDlg, IDC_EDITY3);
+		hwndz3Edit = GetDlgItem(hDlg, IDC_EDITZ3);
+		hwndx4Edit = GetDlgItem(hDlg, IDC_EDITX4);
+		hwndy4Edit = GetDlgItem(hDlg, IDC_EDITY4);
+		hwndz4Edit = GetDlgItem(hDlg, IDC_EDITZ4);
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		if (LOWORD(wParam) == IDOK)
 		{
-			EndDialog(hDlg, LOWORD(wParam));
+			SendMessage(hwndx1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x1 = _tstoi(szBuffer);
+			SendMessage(hwndy1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y1 = _tstoi(szBuffer);
+			SendMessage(hwndz1Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z1 = _tstoi(szBuffer);
+			SendMessage(hwndx2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x2 = _tstoi(szBuffer);
+			SendMessage(hwndy2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y2 = _tstoi(szBuffer);
+			SendMessage(hwndz2Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z2 = _tstoi(szBuffer);
+			SendMessage(hwndx3Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x3 = _tstoi(szBuffer);
+			SendMessage(hwndy3Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y3 = _tstoi(szBuffer);
+			SendMessage(hwndz3Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z3 = _tstoi(szBuffer);
+			SendMessage(hwndx4Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			x4 = _tstoi(szBuffer);
+			SendMessage(hwndy4Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			y4 = _tstoi(szBuffer);
+			SendMessage(hwndz4Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
+			z4 = _tstoi(szBuffer);
+
+			DrawableVector.push_back(new Quadrilateral(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4));
+
+			EndDialog(hDlg, LOWORD(wParam));			
+			RedrawWindow(GetParent(hDlg), NULL, NULL, RDW_INTERNALPAINT);
 			return (INT_PTR)TRUE;
 		}
 		break;

@@ -9,6 +9,7 @@
 #include "STLFile.h"
 #include "Drawable.h"
 #include "Line.h"
+#include "Quadrilateral.h"
 
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2

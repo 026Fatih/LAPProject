@@ -15,6 +15,12 @@ Quadrilateral::Quadrilateral(int x1, int y1, int z1, int x2, int y2, int z2,
 	lines[3] = new Line(x4, y4, z4, x1, y1, z1);
 }
 
+void Quadrilateral::draw()
+{
+	for (int i = 0; i < 4; i++)
+		lines[i]->draw();
+}
+
 Quadrilateral::~Quadrilateral(void)
 {
 	for (int i = 0; i < 4; i++)

@@ -196,7 +196,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT			ps;
 	static TCHAR		szFirstSTLPath[MAX_PATH], szSecondSTLPath[MAX_PATH];       // buffer for file name	
 	STLFile*			temp;	
-	static std::vector<STLFile*>::iterator p;	
+	static std::vector<STLFile*>::iterator p;
+	static std::vector<Drawable*>::iterator DrawableIterator;
 	static char szListItem[MAXSOLIDCHAR];
 
 	switch (message)
@@ -481,6 +482,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				(*p)->yBaseRot = (GLfloat)((int)(*p)->yRot % 360);
 				(*p)->xBaseRot = (GLfloat)((int)(*p)->xRot % 360);
 			}
+
+			for(DrawableIterator = DrawableVector.begin();
+				DrawableIterator != DrawableVector.end(); DrawableIterator++)
+			{
+				(*DrawableIterator)->yBaseRot = (GLfloat)((int)(*DrawableIterator)->yRot % 360);
+				(*DrawableIterator)->xBaseRot = (GLfloat)((int)(*DrawableIterator)->xRot % 360);
+			}
 		}
 		else
 		{
@@ -498,6 +506,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				(*p)->zBaseRot = (GLfloat)((int)(*p)->zRot % 360);
 			}
+			for(DrawableIterator = DrawableVector.begin();
+				DrawableIterator != DrawableVector.end(); DrawableIterator++)
+			{
+				(*DrawableIterator)->zBaseRot = (GLfloat)((int)(*DrawableIterator)->zRot % 360);
+			}
 		}
 		return 0 ;
 
@@ -514,6 +527,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					(*p)->yRot = (*p)->yBaseRot + (xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;
 					(*p)->xRot = (*p)->xBaseRot + (yStartingPos - HIWORD(lParam)) * ROTATIONRATIO;
 				}
+
+				for(DrawableIterator = DrawableVector.begin();
+					DrawableIterator != DrawableVector.end(); DrawableIterator++)
+				{
+					(*DrawableIterator)->yRot = (*DrawableIterator)->yBaseRot +
+						(xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;
+					(*DrawableIterator)->xRot = (*DrawableIterator)->xBaseRot +
+						(yStartingPos - HIWORD(lParam)) * ROTATIONRATIO;
+				}
 				InvalidateRect(hWnd, NULL, FALSE);
 			}
 
@@ -522,6 +544,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				for(p = STLFileVector.begin(); p != STLFileVector.end(); p++)
 				{
 					(*p)->zRot = (*p)->zBaseRot + (xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;
+				}
+				for(DrawableIterator = DrawableVector.begin();
+					DrawableIterator != DrawableVector.end(); DrawableIterator++)
+				{
+					(*DrawableIterator)->zRot = (*DrawableIterator)->zBaseRot +
+						(xStartingPos - LOWORD(lParam)) * ROTATIONRATIO;;
 				}
 				InvalidateRect(hWnd, NULL, FALSE);
 			}

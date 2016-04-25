@@ -17,4 +17,6 @@ Quadrilateral::Quadrilateral(int x1, int y1, int z1, int x2, int y2, int z2,
 
 Quadrilateral::~Quadrilateral(void)
 {
+	for (int i = 0; i < 4; i++)
+		delete lines[i];
 }

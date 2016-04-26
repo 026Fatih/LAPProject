@@ -102,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BezierCurve.cpp" />
+    <ClCompile Include="CurveDlgProc.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="ErrorExit.cpp" />
     <ClCompile Include="LAPWin32.cpp" />

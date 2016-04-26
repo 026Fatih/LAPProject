@@ -88,6 +88,7 @@
     <None Include="zoom_out.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BezierCurve.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="LAPWin32.h" />
     <ClInclude Include="Line.h" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BezierCurve.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="ErrorExit.cpp" />
     <ClCompile Include="LAPWin32.cpp" />

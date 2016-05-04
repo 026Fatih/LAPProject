@@ -49,7 +49,7 @@ INT_PTR CALLBACK CurveDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 			SendMessage(hwndz3Edit, WM_GETTEXT, 100, (LPARAM) szBuffer);
 			z3 = _tstoi(szBuffer);
 
-			DrawableVector.push_back(new BezierCurve(x1, y1, z1, x2, y2, z2, x3, y3, z3));
+			//DrawableVector.push_back(new BezierCurve(x1, y1, z1, x2, y2, z2, x3, y3, z3));
 
 			EndDialog(hDlg, LOWORD(wParam));			
 			RedrawWindow(GetParent(hDlg), NULL, NULL, RDW_INTERNALPAINT);

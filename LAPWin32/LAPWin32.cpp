@@ -206,6 +206,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		// Window creation, setup for OpenGL
 	case WM_CREATE:	
+		DrawableVector.push_back(new Surface());
 		cxChar = LOWORD(GetDialogBaseUnits());
 		cyChar = HIWORD(GetDialogBaseUnits());
 		cyButton = cxButton = 40;

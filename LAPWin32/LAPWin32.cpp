@@ -465,6 +465,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_LINE), hWnd, LineDlgProc);
 			break;
 
+		case ID_CURVEBUTTON:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_CURVE), hWnd, CurveDlgProc);
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}

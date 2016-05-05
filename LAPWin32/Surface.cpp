@@ -43,7 +43,9 @@ void Surface::draw()
 	};
 
 	glPushMatrix();
-	glRotatef(85.0, 1.0, 1.0, 1.0);
+	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(this->yRot, 0.0f, 1.0f, 0.0f);	
+	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
 	glMap2f(GL_MAP2_VERTEX_3,	// Type of data generated
 	0.0f,						// Lower u range
 	10.0f,						// Upper u range

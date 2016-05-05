@@ -35,6 +35,11 @@ BezierCurve::BezierCurve(int x1, int y1, int z1, int x2, int y2, int z2, int x3,
 
 void BezierCurve::draw()
 {
+	glPushMatrix();
+	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(this->yRot, 0.0f, 1.0f, 0.0f);	
+	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
+
 	glMap1f(GL_MAP1_VERTEX_3,	// Type of data generated
 		0.0f,						// Lower u range
 		100.0f,						// Upper u range
@@ -50,6 +55,8 @@ void BezierCurve::draw()
 
 	// Evaluate the grid, using lines
 	glEvalMesh1(GL_LINE,0,100);
+
+	glPopMatrix();
 }
 
 BezierCurve::~BezierCurve(void)

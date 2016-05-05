@@ -11,6 +11,7 @@
 #include "Line.h"
 #include "Quadrilateral.h"
 #include "Surface.h"
+#include "BezierCurve.h"
 
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2

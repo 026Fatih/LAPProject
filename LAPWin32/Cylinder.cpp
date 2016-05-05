@@ -24,7 +24,8 @@ void Cylinder::draw()
 	glColor3ub(R-40,G-40,B-40);//BUNADA 
 	glBegin(GL_QUAD_STRIP);
 	angle = 0.0;
-	while( angle < 2*PI ) {
+	while(angle < (2 * PI))
+	{
 		x = radius * cos(angle);
 		y = radius * sin(angle);
 		glVertex3f(x, y , height);

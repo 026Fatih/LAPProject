@@ -3,7 +3,18 @@
 
 Surface::Surface(void)
 {
-	GLfloat ctrlpoints[4][4][3] = 
+	
+	glEnable(GL_AUTO_NORMAL);
+
+}
+
+Surface::~Surface(void)
+{
+}
+
+void Surface::draw()
+{
+	GLfloat ctrlPoints[4][4][3] = 
 	{
 		{
 			{-1.5, -1.5, 4.0},
@@ -31,22 +42,21 @@ Surface::Surface(void)
 		}
 	};
 
-	glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,
-		0, 1, 12, 4, &ctrlpoints[0][0][0]);
-	glEnable(GL_MAP2_VERTEX_3);
-	glEnable(GL_AUTO_NORMAL);
-	glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
-
-}
-
-Surface::~Surface(void)
-{
-}
-
-void Surface::draw()
-{
 	glPushMatrix();
 	glRotatef(85.0, 1.0, 1.0, 1.0);
-	glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+	glMap2f(GL_MAP2_VERTEX_3,	// Type of data generated
+	0.0f,						// Lower u range
+	10.0f,						// Upper u range
+	3,							// Distance between points in the data
+	4,							// Dimension in u direction (order)
+	0.0f,						// Lover v range
+	10.0f,						// Upper v range
+	9,							// Distance between points in the data
+	3,							// Dimension in v direction (order)
+	&ctrlPoints[0][0][0]);		// array of control points
+	
+	glEnable(GL_MAP2_VERTEX_3);
+	glMapGrid2f(10,0.0f,10.0f,10,0.0f,10.0f);
+	glEvalMesh2(GL_LINE, 0, 10, 0, 10);
 	glPopMatrix();
 }

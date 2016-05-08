@@ -12,6 +12,7 @@
 #include "Quadrilateral.h"
 #include "Surface.h"
 #include "BezierCurve.h"
+#include "Cylinder.h"
 
 #define ID_OPENGLSTATIC					1
 #define ID_ZOOMINBUTTON					2
@@ -28,6 +29,7 @@
 #define ID_RECTANGLEBUTTON				13
 #define ID_LINEBUTTON					14
 #define	ID_CURVEBUTTON					15
+#define ID_SURFACEBUTTON				16
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100

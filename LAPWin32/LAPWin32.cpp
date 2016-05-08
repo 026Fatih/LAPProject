@@ -170,6 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hwndResetRotation,
 		hwndRotationMode,
 		hwndShowHideButton,
+		hwndSurfaceButton,
 		hwndSTLComboBox,
 		hwndSurfaceColorButton,
 		hwndZoomInButton,
@@ -187,9 +188,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cySpacing,
 		iItemIndex,
 		xBorderColorButton,
+		xCurveButton,
 		xLineButton,
 		xRectangleButton,
 		xShowHideButton,
+		xSurfaceButton,
 		xSurfaceColorButton,
 		xStartingPos,
 		yStartingPos;
@@ -206,11 +209,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		// Window creation, setup for OpenGL
 	case WM_CREATE:	
-		DrawableVector.push_back(new Surface());
+		DrawableVector.push_back(new Cylinder(5, 10, 1, 1, 1));
 		cxChar = LOWORD(GetDialogBaseUnits());
 		cyChar = HIWORD(GetDialogBaseUnits());
 		cyButton = cxButton = 40;
-		cySpacing = cyChar / 2;		
+		cySpacing = cyChar / 2;
+
+		cxOpenGLStatic = cxClient - LEFTTOOLBARWIDTH;
+		cyOpenGLStatic = cyClient - TOPTOOLBARHEIGHT;
 
 		hwndOpenGLStatic = CreateWindow(TEXT("static"), NULL,
 			WS_CHILD | WS_VISIBLE,
@@ -247,43 +253,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			cxChar, 5 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_DEMOBUTTON, hInst, NULL);
 
+		cxSTLComboBox = 500;
+		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
+			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
+			LEFTTOOLBARWIDTH,  cySpacing, cxSTLComboBox, 50,
+			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
+
+		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
 		hwndBorderColorButton = CreateWindow(TEXT("button"),
 			TEXT("Border Color"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
-			0, 0, 0, 0,
+			xBorderColorButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_BORDERCOLORBUTTON, hInst, NULL);
 
+		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;		
 		hwndSurfaceColorButton = CreateWindow(TEXT("button"),
 			TEXT("Surface Color"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
-			0, 0, 0, 0,
+			xSurfaceColorButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_SURFACECOLORBUTTON, hInst, NULL);
 
-		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
-			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-			LEFTTOOLBARWIDTH,  cySpacing, 10, 100,
-			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
-
+		xShowHideButton = xSurfaceColorButton + cxButton + cxChar;
 		hwndShowHideButton = CreateWindow(WC_BUTTON,
 			TEXT("Show"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			0, 0, 0, 0,
+			xShowHideButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_SHOWHIDEBUTTON, hInst, NULL);
 
-		hwndRectangleButton = CreateWindow(TEXT("button"), TEXT("Rectangle"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			0, 0, 0, 0,
-			hWnd, (HMENU) ID_RECTANGLEBUTTON, hInst, NULL);
-
+		xLineButton = xShowHideButton + cxButton + cxChar;
 		hwndLineButton = CreateWindow(TEXT("button"), TEXT("Line"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			0, 0, 0, 0,
+			xLineButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_LINEBUTTON, hInst, NULL);
 
+		xRectangleButton = xLineButton + cxButton + cxChar;
+		hwndRectangleButton = CreateWindow(TEXT("button"), TEXT("Rectangle"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			xRectangleButton, cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_RECTANGLEBUTTON, hInst, NULL);
+
+		xCurveButton = xRectangleButton + cxButton + cxChar;
 		hwndCurveButton = CreateWindow(TEXT("button"), TEXT("Curve"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			0, 0, 0, 0,
+			xCurveButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_CURVEBUTTON, hInst, NULL);
+
+		xSurfaceButton = xCurveButton + cxButton + cxChar;
+		hwndSurfaceButton = CreateWindow(TEXT("button"), TEXT("Surface"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			xSurfaceButton, cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_SURFACEBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
@@ -467,6 +486,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case ID_CURVEBUTTON:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_CURVE), hWnd, CurveDlgProc);
+			break;
+
+		case ID_SURFACEBUTTON:			
+			DrawableVector.push_back(new Surface());
 			break;
 
 		default:
@@ -659,25 +682,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cyClient = HIWORD(lParam);
 		cxOpenGLStatic = cxClient - LEFTTOOLBARWIDTH;
 		cyOpenGLStatic = cyClient - TOPTOOLBARHEIGHT;
-		cxSTLComboBox = 500;
-		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
-		xSurfaceColorButton = xBorderColorButton + cxButton + cxChar;		
-		xShowHideButton = xSurfaceColorButton + cxButton + cxChar;
-		xLineButton = xShowHideButton + cxButton + cxChar;
-		xRectangleButton = xLineButton + cxButton + cxChar;
 
 		// Call our function which modifies the clipping
 		// volume and viewport		
 		ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
 
 		MoveWindow(hwndOpenGLStatic, LEFTTOOLBARWIDTH, TOPTOOLBARHEIGHT, cxOpenGLStatic, cyOpenGLStatic, FALSE);
-		MoveWindow(hwndSTLComboBox, LEFTTOOLBARWIDTH, cySpacing, cxSTLComboBox, 500, FALSE);
-		MoveWindow(hwndBorderColorButton, xBorderColorButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndSurfaceColorButton, xSurfaceColorButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndShowHideButton, xShowHideButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndLineButton, xLineButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndRectangleButton, xRectangleButton, cySpacing, cxButton, cyButton, TRUE);
-		MoveWindow(hwndCurveButton, xRectangleButton + cxButton + cxChar, cySpacing, cxButton, cyButton, TRUE);
 		return 0;
 
 	case WM_KEYDOWN:

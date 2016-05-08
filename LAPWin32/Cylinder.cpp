@@ -5,13 +5,11 @@
 Cylinder::Cylinder(void)
 {
 }
-Cylinder::Cylinder(GLfloat r,
-	GLfloat h,
-	GLubyte R,//bunlarý çýkarýyýmmý
-	GLubyte G,
-	GLubyte B){
-		radius=r;
-		height=h;}
+Cylinder::Cylinder(GLfloat r, GLfloat h)
+{
+	this->radius=r;
+	this->height=h;
+}
 
 void Cylinder::draw()
 {
@@ -26,8 +24,7 @@ void Cylinder::draw()
 	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
 
 	/** Draw the tube */
-	glColor3ub(R-40,G-40,B-40);//BUNADA 
-	glBegin(GL_QUAD_STRIP);
+	glBegin(GL_LINE_STRIP);
 	angle = 0.0;
 	while(angle < (2 * PI))
 	{
@@ -42,9 +39,7 @@ void Cylinder::draw()
 	glEnd();
 
 	/** Draw the circle on top of cylinder */
-	glColor3ub(R,G,B);// buna gerek vARMI
-
-	glBegin(GL_POLYGON);
+	glBegin(GL_LINE_STRIP);
 	angle = 0.0;
 	while( angle < 2*PI ) {
 		x = radius * cos(angle);
@@ -53,6 +48,18 @@ void Cylinder::draw()
 		angle = angle + angle_stepsize;
 	}
 	glVertex3f(radius, 0.0, height);
+	glEnd();
+
+	/** Draw the circle on bottom of cylinder */
+	glBegin(GL_LINE_STRIP);
+	angle = 0.0;
+	while( angle < 2*PI ) {
+		x = radius * cos(angle);
+		y = radius * sin(angle);
+		glVertex3f(x, y , 0.0);
+		angle = angle + angle_stepsize;
+	}
+	glVertex3f(radius, 0.0, 0.0);
 	glEnd();
 
 	glPopMatrix();

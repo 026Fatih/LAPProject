@@ -12,11 +12,8 @@ public:
 		G,
 		B;
 	Cylinder(void);
-	Cylinder(GLfloat r,
-		GLfloat h,
-		GLubyte R,// þunlar renlermi
-		GLubyte G,
-		GLubyte B);
+	Cylinder(GLfloat r, GLfloat h);
 	~Cylinder(void);
+
 	virtual void draw();
 };

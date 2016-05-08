@@ -30,6 +30,7 @@
 #define ID_LINEBUTTON					14
 #define	ID_CURVEBUTTON					15
 #define ID_SURFACEBUTTON				16
+#define ID_CYLINDERBUTTON				17
 
 #define MAX_LOADSTRING		100
 #define MAXSOLIDCHAR		100

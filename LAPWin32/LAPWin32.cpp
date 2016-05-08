@@ -162,6 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HWND
 		hwndBorderColorButton,
 		hwndCurveButton,
+		hwndCylinderButton,
 		hwndDemoButton,
 		hwndLineButton,
 		hwndMoveMode,
@@ -189,6 +190,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		iItemIndex,
 		xBorderColorButton,
 		xCurveButton,
+		xCylinderButton,
 		xLineButton,
 		xRectangleButton,
 		xShowHideButton,
@@ -209,7 +211,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		// Window creation, setup for OpenGL
 	case WM_CREATE:	
-		DrawableVector.push_back(new Cylinder(5, 10, 1, 1, 1));
 		cxChar = LOWORD(GetDialogBaseUnits());
 		cyChar = HIWORD(GetDialogBaseUnits());
 		cyButton = cxButton = 40;
@@ -303,6 +304,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			xSurfaceButton, cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_SURFACEBUTTON, hInst, NULL);
+		
+		xCylinderButton = xSurfaceButton + cxButton + cxChar;
+		hwndCylinderButton = CreateWindow(TEXT("button"), TEXT("Cylinder"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			xCylinderButton, cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_CYLINDERBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),
 			IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_LOADTRANSPARENT | LR_LOADMAP3DCOLORS | LR_VGACOLOR);
@@ -488,8 +495,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_CURVE), hWnd, CurveDlgProc);
 			break;
 
-		case ID_SURFACEBUTTON:			
-			DrawableVector.push_back(new Surface());
+		case ID_SURFACEBUTTON:
+			DrawableVector.push_back(new Surface());			
+			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			break;
+
+		case ID_CYLINDERBUTTON:			
+			DrawableVector.push_back(new Cylinder(5, 10));
+			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			break;
 
 		default:

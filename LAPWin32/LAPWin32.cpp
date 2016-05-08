@@ -257,7 +257,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		cxSTLComboBox = 500;
 		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
 			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
-			LEFTTOOLBARWIDTH,  cySpacing, cxSTLComboBox, 50,
+			LEFTTOOLBARWIDTH,  cySpacing, cxSTLComboBox, 500,
 			hWnd, (HMENU) ID_STLCOMBOBOX, hInst, NULL);
 
 		xBorderColorButton = LEFTTOOLBARWIDTH + cxSTLComboBox + cxChar;
@@ -375,7 +375,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					(*p)->ResetRotation();
 				}
-				SendMessageA(hwndSTLComboBox, (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) temp->getName()); 
+				const char* tempName = temp->getName();
+				SendMessageA(hwndSTLComboBox, (UINT) CB_ADDSTRING, (WPARAM) 0, (LPARAM) tempName); 
 				ChangeSize(cxOpenGLStatic, cyOpenGLStatic);
 				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			}

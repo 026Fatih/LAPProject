@@ -59,7 +59,7 @@ void Surface::draw()
 	
 	glEnable(GL_MAP2_VERTEX_3);
 	glMapGrid2f(10,0.0f,10.0f,10,0.0f,10.0f);
-	glEvalMesh2(GL_FILL, 0, 10, 0, 10);
+	glEvalMesh2(GL_LINE, 0, 10, 0, 10);
 	glEnable(GL_AUTO_NORMAL);
 	glPopMatrix();
 }

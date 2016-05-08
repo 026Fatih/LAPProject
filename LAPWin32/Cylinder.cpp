@@ -20,6 +20,11 @@ void Cylinder::draw()
 	GLfloat angle          = 0.0;
 	GLfloat angle_stepsize = 0.1;
 
+	glPushMatrix();
+	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);
+	glRotatef(this->yRot, 0.0f, 1.0f, 0.0f);	
+	glRotatef(this->zRot, 0.0f, 0.0f, 1.0f);
+
 	/** Draw the tube */
 	glColor3ub(R-40,G-40,B-40);//BUNADA 
 	glBegin(GL_QUAD_STRIP);
@@ -49,6 +54,8 @@ void Cylinder::draw()
 	}
 	glVertex3f(radius, 0.0, height);
 	glEnd();
+
+	glPopMatrix();
 }
 
 Cylinder::~Cylinder(void)

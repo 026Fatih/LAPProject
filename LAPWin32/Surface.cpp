@@ -14,32 +14,23 @@ Surface::~Surface(void)
 
 void Surface::draw()
 {
-	GLfloat ctrlPoints[4][4][3] = 
+	GLfloat ctrlPoints[3][3][3] = 
 	{
 		{
-			{-1.5, -1.5, 4.0},
-			{-0.5, -1.5, 2.0},
-			{0.5, -1.5, -1.0},
-			{1.5, -1.5, 2.0}
+			{  -4.0f, 0.0f, 4.0f},	
+			{ -2.0f, 4.0f, 4.0f},	
+			{  4.0f, 0.0f, 4.0f }
 		},
 		{
-			{-1.5, -0.5, 1.0},
-			{-0.5, -0.5, 3.0},
-			{0.5, -0.5, 0.0},
-			{1.5, -0.5, -1.0}
+			{  -4.0f, 0.0f, 0.0f},
+			{ -2.0f, 4.0f, 0.0f},
+			{  4.0f, 0.0f, 0.0f}
 		},
 		{
-			{-1.5, 0.5, 4.0},
-			{-0.5, 0.5, 0.0},
-			{0.5, 0.5, 3.0},
-			{1.5, 0.5, 4.0}
+			{  -4.0f, 0.0f, -4.0f},
+			{ -2.0f, 4.0f, -4.0f},
+			{  4.0f, 0.0f, -4.0f}
 		},
-		{
-			{-1.5, 1.5, -2.0},
-			{-0.5, 1.5, -2.0},
-			{0.5, 1.5, 0.0},
-			{1.5, 1.5, -1.0}
-		}
 	};
 
 	glPushMatrix();
@@ -50,7 +41,7 @@ void Surface::draw()
 	0.0f,						// Lower u range
 	10.0f,						// Upper u range
 	3,							// Distance between points in the data
-	4,							// Dimension in u direction (order)
+	3,							// Dimension in u direction (order)
 	0.0f,						// Lover v range
 	10.0f,						// Upper v range
 	9,							// Distance between points in the data

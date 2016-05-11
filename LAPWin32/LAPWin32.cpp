@@ -160,6 +160,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HGLRC		hRC;               // Permenant Rendering context
 	static HMENU		hMenu;
 	static HWND
+		hwndAtilimButton,
 		hwndBorderColorButton,
 		hwndCurveButton,
 		hwndCylinderButton,
@@ -254,6 +255,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			cxChar, 5 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_DEMOBUTTON, hInst, NULL);
 
+		hwndAtilimButton = CreateWindow(WC_BUTTON, TEXT("ATILIM"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 6 * (cyButton + cySpacing) + cySpacing, cxButton + 10, cyButton,
+			hWnd, (HMENU) ID_ATILIMBUTTON, hInst, NULL);
+
 		cxSTLComboBox = 500;
 		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
 			CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_VISIBLE,
@@ -304,7 +310,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			xSurfaceButton, cySpacing, 2 * cxButton, cyButton,
 			hWnd, (HMENU) ID_SURFACEBUTTON, hInst, NULL);
-		
+
 		xCylinderButton = xSurfaceButton + 2 * cxButton + cxChar;
 		hwndCylinderButton = CreateWindow(TEXT("button"), TEXT("Cylinder"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
@@ -505,6 +511,80 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DrawableVector.push_back(new Cylinder(5, 10));
 			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 			break;
+
+		case ID_ATILIMBUTTON:
+			{
+				std::vector<Drawable*> frontside;
+				// Front Side
+				// A
+				frontside.push_back(new Line(-58, -10, 60, -50, 10, 60));
+				frontside.push_back(new Line(-50, 10, 60, -42, -10, 60));			
+				frontside.push_back(new Line(-54, 0, 60, -46, 0, 60));
+
+				// T
+				frontside.push_back(new Line(-38, 10, 60, -22, 10, 60));			
+				frontside.push_back(new Line(-30, 10, 60, -30, -10, 60));
+
+				// I
+				frontside.push_back(new Line(-10, 10, 60, -10, -10, 60));
+
+				// L
+				frontside.push_back(new Line(2, 10, 60, 2, -10, 60));			
+				frontside.push_back(new Line(2, -10, 60, 18, -10, 60));
+
+				// I
+				frontside.push_back(new Line(30, 10, 60, 30, -10, 60));
+
+				// M			
+				frontside.push_back(new Line(42, 10, 60, 42, -10, 60));			
+				frontside.push_back(new Line(42, 10, 60, 50, -10, 60));			
+				frontside.push_back(new Line(50, -10, 60, 58, 10, 60));
+				frontside.push_back(new Line(58, 10, 60, 58, -10, 60));
+
+				// Right Side			
+				std::vector<Drawable*> rightside;
+				for(DrawableIterator = frontside.begin();
+					DrawableIterator != frontside.end(); DrawableIterator++)
+				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
+					rightside.push_back(new Line(60,
+						((Line*)(*DrawableIterator))->startPoint.y,
+						((Line*)(*DrawableIterator))->startPoint.x,
+						60,
+						((Line*)(*DrawableIterator))->endPoint.y,
+						((Line*)(*DrawableIterator))->endPoint.x));
+
+					(*DrawableIterator)->xBaseRot = (GLfloat)((int)(*DrawableIterator)->xRot % 360);
+				}
+
+				// Back Side
+				/*std::vector<Drawable*> backside;
+				for(DrawableIterator = backside.begin();
+					DrawableIterator != backside.end(); DrawableIterator++)
+				{
+					rightside.push_back(new Line(60,
+						((Line*)(*DrawableIterator))->startPoint.y,
+						((Line*)(*DrawableIterator))->startPoint.x,
+						60,
+						((Line*)(*DrawableIterator))->endPoint.y,
+						((Line*)(*DrawableIterator))->endPoint.x));
+
+					(*DrawableIterator)->xBaseRot = (GLfloat)((int)(*DrawableIterator)->xRot % 360);
+				}*/
+
+				for(DrawableIterator = frontside.begin();
+					DrawableIterator != frontside.end(); DrawableIterator++)
+				{
+					DrawableVector.push_back(*DrawableIterator);
+				}
+				for(DrawableIterator = rightside.begin();
+					DrawableIterator != rightside.end(); DrawableIterator++)
+				{
+					DrawableVector.push_back(*DrawableIterator);
+				}
+				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+				break;
+			}
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -747,6 +827,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			(*p)->incrementYRot(2.0f);
 		}		
+		for (DrawableIterator = DrawableVector.begin(); DrawableIterator != DrawableVector.end(); DrawableIterator++)
+			(*DrawableIterator)->yRot += 2.0f;
 		RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 		return 0;
 

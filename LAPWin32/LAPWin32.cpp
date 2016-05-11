@@ -290,25 +290,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		xRectangleButton = xLineButton + cxButton + cxChar;
 		hwndRectangleButton = CreateWindow(TEXT("button"), TEXT("Rectangle"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			xRectangleButton, cySpacing, cxButton, cyButton,
+			xRectangleButton, cySpacing, 2 * cxButton, cyButton,
 			hWnd, (HMENU) ID_RECTANGLEBUTTON, hInst, NULL);
 
-		xCurveButton = xRectangleButton + cxButton + cxChar;
+		xCurveButton = xRectangleButton + 2 * cxButton + cxChar;
 		hwndCurveButton = CreateWindow(TEXT("button"), TEXT("Curve"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			xCurveButton, cySpacing, cxButton, cyButton,
+			xCurveButton, cySpacing, 2 * cxButton, cyButton,
 			hWnd, (HMENU) ID_CURVEBUTTON, hInst, NULL);
 
-		xSurfaceButton = xCurveButton + cxButton + cxChar;
+		xSurfaceButton = xCurveButton + 2 * cxButton + cxChar;
 		hwndSurfaceButton = CreateWindow(TEXT("button"), TEXT("Surface"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			xSurfaceButton, cySpacing, cxButton, cyButton,
+			xSurfaceButton, cySpacing, 2 * cxButton, cyButton,
 			hWnd, (HMENU) ID_SURFACEBUTTON, hInst, NULL);
 		
-		xCylinderButton = xSurfaceButton + cxButton + cxChar;
+		xCylinderButton = xSurfaceButton + 2 * cxButton + cxChar;
 		hwndCylinderButton = CreateWindow(TEXT("button"), TEXT("Cylinder"),
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			xCylinderButton, cySpacing, cxButton, cyButton,
+			xCylinderButton, cySpacing, 2 * cxButton, cyButton,
 			hWnd, (HMENU) ID_CYLINDERBUTTON, hInst, NULL);
 
 		hZoomInImage = LoadImage(hInst, MAKEINTRESOURCE(IDI_ZOOMIN),

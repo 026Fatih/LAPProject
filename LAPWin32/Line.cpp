@@ -19,8 +19,28 @@ Line::Line(int xS, int yS, int zS, int xE, int yE, int zE)
 	this->xRot = this->yRot = this->zRot = 0;
 }
 
+Line::Line(GLfloat xS, GLfloat yS, GLfloat zS, GLfloat xE, GLfloat yE, GLfloat zE)
+{
+	this->startPoint.x = xS;
+	this->startPoint.y = yS;
+	this->startPoint.z = zS;
+	this->endPoint.x = xE;
+	this->endPoint.y = yE;
+	this->endPoint.z = zE;
+
+	this->xRot = this->yRot = this->zRot = 0;
+}
+
 Line::~Line(void)
 {
+}
+
+void Line::setLineWidthMin()
+{
+	GLfloat	fSizes[2];			// Line width range metrics
+
+	glGetFloatv(GL_LINE_WIDTH_RANGE,fSizes);
+	this->width = fSizes[0];
 }
 
 void Line::setLineWidthMid()

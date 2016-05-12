@@ -546,7 +546,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				for(DrawableIterator = frontside.begin();
 					DrawableIterator != frontside.end(); DrawableIterator++)
 				{
-					((Line*)(*DrawableIterator))->setLineWidthMax();
 					rightside.push_back(new Line((GLfloat)60,
 						((Line*)(*DrawableIterator))->startPoint.y,
 						((Line*)(*DrawableIterator))->startPoint.x,
@@ -576,7 +575,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				for(DrawableIterator = frontside.begin();
 					DrawableIterator != frontside.end(); DrawableIterator++)
 				{
-					((Line*)(*DrawableIterator))->setLineWidthMax();
 					leftside.push_back(new Line((GLfloat) -60,
 						((Line*)(*DrawableIterator))->startPoint.y,
 						-((Line*)(*DrawableIterator))->startPoint.x,
@@ -590,21 +588,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				for(DrawableIterator = frontside.begin();
 					DrawableIterator != frontside.end(); DrawableIterator++)
 				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
 					DrawableVector.push_back(*DrawableIterator);
 				}
 				for(DrawableIterator = rightside.begin();
 					DrawableIterator != rightside.end(); DrawableIterator++)
 				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
 					DrawableVector.push_back(*DrawableIterator);
 				}
 				for(DrawableIterator = backside.begin();
 					DrawableIterator != backside.end(); DrawableIterator++)
 				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
 					DrawableVector.push_back(*DrawableIterator);
 				}
 				for(DrawableIterator = leftside.begin();
 					DrawableIterator != leftside.end(); DrawableIterator++)
 				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
 					DrawableVector.push_back(*DrawableIterator);
 				}
 

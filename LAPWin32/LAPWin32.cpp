@@ -162,6 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static HWND
 		hwndAtilimButton,
 		hwndBorderColorButton,
+		hwndClearButton,
 		hwndCurveButton,
 		hwndCylinderButton,
 		hwndDemoButton,
@@ -245,9 +246,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			cxChar, 3 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
 			hWnd, (HMENU) ID_MOVEMODEBUTTON, hInst, NULL);
 
-		hwndShowHideButton = CreateWindow(WC_BUTTON, TEXT("Reset Rotation"),
-			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-			cxChar, 4 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+		hwndShowHideButton = CreateWindow(WC_BUTTON, TEXT("Reset Rot"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT | BS_MULTILINE,
+			cxChar, 4 * (cyButton + cySpacing) + cySpacing, cxButton + 20, cyButton,
 			hWnd, (HMENU) ID_RESETROTATIONBUTTON, hInst, NULL);		
 
 		hwndDemoButton = CreateWindow(WC_BUTTON, TEXT("Demo"),
@@ -259,6 +260,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
 			cxChar, 6 * (cyButton + cySpacing) + cySpacing, cxButton + 10, cyButton,
 			hWnd, (HMENU) ID_ATILIMBUTTON, hInst, NULL);
+
+		hwndClearButton = CreateWindow(WC_BUTTON, TEXT("Clear"),
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+			cxChar, 7 * (cyButton + cySpacing) + cySpacing, cxButton, cyButton,
+			hWnd, (HMENU) ID_CLEARBUTTON, hInst, NULL);
 
 		cxSTLComboBox = 500;
 		hwndSTLComboBox = CreateWindowA("combobox", NULL, 
@@ -613,6 +619,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 				break;
 			}
+		case ID_CLEARBUTTON:
+			DrawableVector.clear();
+			STLFileVector.clear();
+			RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
+			break;
 
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);

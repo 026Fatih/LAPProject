@@ -14,4 +14,5 @@ public:
 	virtual void draw();
 
 	~Quadrilateral(void);
+	std::vector<Line*> mesh();
 };

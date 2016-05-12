@@ -17,6 +17,10 @@ void Cylinder::draw()
 	GLfloat y              = 0.0;
 	GLfloat angle          = 0.0;
 	GLfloat angle_stepsize = 0.1f;
+	GLfloat	fSizes[2];			// Line width range metrics
+
+	glGetFloatv(GL_LINE_WIDTH_RANGE,fSizes);
+	glLineWidth(fSizes[0]);
 
 	glPushMatrix();
 	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);

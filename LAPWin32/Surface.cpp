@@ -32,6 +32,10 @@ void Surface::draw()
 			{  4.0f, 0.0f, -4.0f}
 		},
 	};
+	GLfloat	fSizes[2];			// Line width range metrics
+
+	glGetFloatv(GL_LINE_WIDTH_RANGE,fSizes);
+	glLineWidth(fSizes[0]);
 
 	glPushMatrix();
 	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);

@@ -547,10 +547,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					DrawableIterator != frontside.end(); DrawableIterator++)
 				{
 					((Line*)(*DrawableIterator))->setLineWidthMax();
-					rightside.push_back(new Line(60,
+					rightside.push_back(new Line((GLfloat)60,
 						((Line*)(*DrawableIterator))->startPoint.y,
 						((Line*)(*DrawableIterator))->startPoint.x,
-						60,
+						(GLfloat)60,
 						((Line*)(*DrawableIterator))->endPoint.y,
 						((Line*)(*DrawableIterator))->endPoint.x));
 

@@ -517,29 +517,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				std::vector<Drawable*> frontside;
 				// Front Side
 				// A
-				frontside.push_back(new Line(-58, -10, 60, -50, 10, 60));
-				frontside.push_back(new Line(-50, 10, 60, -42, -10, 60));			
-				frontside.push_back(new Line(-54, 0, 60, -46, 0, 60));
+				frontside.push_back(new Line(-58, -10, -60, -50, 10, -60));
+				frontside.push_back(new Line(-50, 10, -60, -42, -10, -60));			
+				frontside.push_back(new Line(-54, 0, -60, -46, 0, -60));
 
 				// T
-				frontside.push_back(new Line(-38, 10, 60, -22, 10, 60));			
-				frontside.push_back(new Line(-30, 10, 60, -30, -10, 60));
+				frontside.push_back(new Line(-38, 10, -60, -22, 10, -60));			
+				frontside.push_back(new Line(-30, 10, -60, -30, -10, -60));
 
 				// I
-				frontside.push_back(new Line(-10, 10, 60, -10, -10, 60));
+				frontside.push_back(new Line(-10, 10, -60, -10, -10, -60));
 
 				// L
-				frontside.push_back(new Line(2, 10, 60, 2, -10, 60));			
-				frontside.push_back(new Line(2, -10, 60, 18, -10, 60));
+				frontside.push_back(new Line(2, 10, -60, 2, -10, -60));			
+				frontside.push_back(new Line(2, -10, -60, 18, -10, -60));
 
 				// I
-				frontside.push_back(new Line(30, 10, 60, 30, -10, 60));
+				frontside.push_back(new Line(30, 10, -60, 30, -10, -60));
 
 				// M			
-				frontside.push_back(new Line(42, 10, 60, 42, -10, 60));			
-				frontside.push_back(new Line(42, 10, 60, 50, -10, 60));			
-				frontside.push_back(new Line(50, -10, 60, 58, 10, 60));
-				frontside.push_back(new Line(58, 10, 60, 58, -10, 60));
+				frontside.push_back(new Line(42, 10, -60, 42, -10, -60));			
+				frontside.push_back(new Line(42, 10, -60, 50, -10, -60));			
+				frontside.push_back(new Line(50, -10, -60, 58, 10, -60));
+				frontside.push_back(new Line(58, 10, -60, 58, -10, -60));
 
 				// Right Side			
 				std::vector<Drawable*> rightside;
@@ -558,19 +558,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 
 				// Back Side
-				/*std::vector<Drawable*> backside;
-				for(DrawableIterator = backside.begin();
-					DrawableIterator != backside.end(); DrawableIterator++)
+				std::vector<Drawable*> backside;
+				for(DrawableIterator = frontside.begin();
+					DrawableIterator != frontside.end(); DrawableIterator++)
 				{
-					rightside.push_back(new Line(60,
+					backside.push_back(new Line(-((Line*)(*DrawableIterator))->startPoint.x,
 						((Line*)(*DrawableIterator))->startPoint.y,
-						((Line*)(*DrawableIterator))->startPoint.x,
-						60,
-						((Line*)(*DrawableIterator))->endPoint.y,
-						((Line*)(*DrawableIterator))->endPoint.x));
+						60.0f,						
+						-((Line*)(*DrawableIterator))->endPoint.x,
+						((Line*)(*DrawableIterator))->endPoint.y,60.0f));
 
 					(*DrawableIterator)->xBaseRot = (GLfloat)((int)(*DrawableIterator)->xRot % 360);
-				}*/
+				}
+
+				// Left Side
+				std::vector<Drawable*> leftside;
+				for(DrawableIterator = frontside.begin();
+					DrawableIterator != frontside.end(); DrawableIterator++)
+				{
+					((Line*)(*DrawableIterator))->setLineWidthMax();
+					leftside.push_back(new Line((GLfloat) -60,
+						((Line*)(*DrawableIterator))->startPoint.y,
+						-((Line*)(*DrawableIterator))->startPoint.x,
+						(GLfloat) -60,
+						((Line*)(*DrawableIterator))->endPoint.y,
+						-((Line*)(*DrawableIterator))->endPoint.x));
+
+					(*DrawableIterator)->xBaseRot = (GLfloat)((int)(*DrawableIterator)->xRot % 360);
+				}
 
 				for(DrawableIterator = frontside.begin();
 					DrawableIterator != frontside.end(); DrawableIterator++)
@@ -582,6 +597,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					DrawableVector.push_back(*DrawableIterator);
 				}
+				for(DrawableIterator = backside.begin();
+					DrawableIterator != backside.end(); DrawableIterator++)
+				{
+					DrawableVector.push_back(*DrawableIterator);
+				}
+				for(DrawableIterator = leftside.begin();
+					DrawableIterator != leftside.end(); DrawableIterator++)
+				{
+					DrawableVector.push_back(*DrawableIterator);
+				}
+
 				RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT);
 				break;
 			}

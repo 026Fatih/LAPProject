@@ -9,12 +9,12 @@ Line::Line(void)
 
 Line::Line(int xS, int yS, int zS, int xE, int yE, int zE)
 {
-	this->startPoint.x = xS;
-	this->startPoint.y = yS;
-	this->startPoint.z = zS;
-	this->endPoint.x = xE;
-	this->endPoint.y = yE;
-	this->endPoint.z = zE;
+	this->startPoint.x = (GLfloat) xS;
+	this->startPoint.y = (GLfloat) yS;
+	this->startPoint.z = (GLfloat) zS;
+	this->endPoint.x = (GLfloat) xE;
+	this->endPoint.y = (GLfloat) yE;
+	this->endPoint.z = (GLfloat) zE;
 
 	this->xRot = this->yRot = this->zRot = 0;
 }

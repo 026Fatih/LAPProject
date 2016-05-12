@@ -13,17 +13,17 @@ BezierCurve::BezierCurve(int x1, int y1, int z1, int x2, int y2, int z2, int x3,
 
 	this->controlPoints = new Point[3];
 
-	this->controlPoints[0].x = x1;
-	this->controlPoints[0].y = y1;
-	this->controlPoints[0].z = z1;
+	this->controlPoints[0].x = (GLfloat) x1;
+	this->controlPoints[0].y = (GLfloat) y1;
+	this->controlPoints[0].z = (GLfloat) z1;
 
-	this->controlPoints[1].x = x2;
-	this->controlPoints[1].y = y2;
-	this->controlPoints[1].z = z2;
+	this->controlPoints[1].x = (GLfloat) x2;
+	this->controlPoints[1].y = (GLfloat) y2;
+	this->controlPoints[1].z = (GLfloat) z2;
 
-	this->controlPoints[2].x = x3;
-	this->controlPoints[2].y = y3;
-	this->controlPoints[2].z = z3;
+	this->controlPoints[2].x = (GLfloat) x3;
+	this->controlPoints[2].y = (GLfloat) y3;
+	this->controlPoints[2].z = (GLfloat) z3;
 
 	for (int i = 0; i < this->cControlPoints; i++)
 	{

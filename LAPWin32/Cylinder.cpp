@@ -16,7 +16,7 @@ void Cylinder::draw()
 	GLfloat x              = 0.0;
 	GLfloat y              = 0.0;
 	GLfloat angle          = 0.0;
-	GLfloat angle_stepsize = 0.1;
+	GLfloat angle_stepsize = 0.1f;
 
 	glPushMatrix();
 	glRotatef(this->xRot, 1.0f, 0.0f, 0.0f);

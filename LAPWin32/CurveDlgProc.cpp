@@ -55,6 +55,11 @@ INT_PTR CALLBACK CurveDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 			RedrawWindow(GetParent(hDlg), NULL, NULL, RDW_INTERNALPAINT);
 			return (INT_PTR)TRUE;
 		}
+		else if (LOWORD(wParam) == IDCANCEL)
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
 		break;
 	}
 	return (INT_PTR)FALSE;
